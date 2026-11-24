@@ -1,0 +1,57 @@
+---
+import { LOCALE_LABELS, LOCALE_TAGS, LOCALES, type Locale, localizedPath } from '@pescadors/shared';
+import { mainNav, pageTitles, t } from '../i18n/ui';
+
+interface Props {
+  locale: Locale;
+  title: string;
+  description?: string;
+  /** Same page in each language (hreflang + language switcher). */
+  alternates: Record<Locale, string>;
+}
+
+const { locale, title, description, alternates } = Astro.props;
+const siteName = t(locale, 'site.name');
+const fullTitle = title === siteName ? title : `${title} | ${siteName}`;
+const canonical = new URL(alternates[locale], Astro.site);
+---
+
+<!doctype html>
+<html lang={LOCALE_TAGS[locale]}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    {description && <meta name="description" content={description} />}
+    <link rel="canonical" href={canonical} />
+    {LOCALES.map((l) => <link rel="alternate" hreflang={LOCALE_TAGS[l]} href={new URL(alternates[l], Astro.site)} />)}
+    <link rel="alternate" hreflang="x-default" href={new URL(alternates.ca, Astro.site)} />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">{t(locale, 'skip.link')}</a>
+    <header>
+      <a href={localizedPath('home', locale)}>{siteName}</a>
+      <nav aria-label={t(locale, 'nav.label')}>
+        <ul>
+          {mainNav.map((key) => <li><a href={localizedPath(key, locale)}>{pageTitles[key][locale]}</a></li>)}
+        </ul>
+      </nav>
+      <nav aria-label={t(locale, 'lang.label')}>
+        <ul>
+          {
+            LOCALES.map((l) => (
+              <li>
+                <a href={alternates[l]} hreflang={LOCALE_TAGS[l]} lang={LOCALE_TAGS[l]} aria-current={l === locale ? 'true' : undefined}>
+                  {LOCALE_LABELS[l]}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+    </header>
+    <main id="main">
+      <slot />
+    </main>
+  </body>
+</html>

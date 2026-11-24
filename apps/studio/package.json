@@ -1,0 +1,30 @@
+{
+  "name": "@pescadors/studio",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "dev": "sanity dev",
+    "build": "sanity build",
+    "deploy": "sanity deploy",
+    "typegen": "sanity schema extract --path ../../packages/shared/sanity/schema.json && sanity typegen generate",
+    "check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@pescadors/shared": "workspace:*",
+    "@sanity/locale-ca-es": "^1.0.17",
+    "@sanity/vision": "^6.24.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "sanity": "^6.24.0",
+    "sanity-plugin-internationalized-array": "^5.3.10",
+    "styled-components": "^6.6.0"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "@types/react": "^19.3.0",
+    "typescript": "^7.0.2"
+  }
+}

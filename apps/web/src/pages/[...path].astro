@@ -1,0 +1,39 @@
+---
+/**
+ * Single entry point for every section page in every language.
+ * Paths come from the shared route map, so translated URLs stay in one place.
+ * Detail pages (news/[slug], calendar/[slug]...) are added once content comes from Sanity.
+ */
+import {
+  alternatePaths,
+  LOCALES,
+  type Locale,
+  localizedPath,
+  ROUTES,
+  type RouteKey,
+} from '@pescadors/shared';
+import type { GetStaticPaths } from 'astro';
+import { pageTitles, t } from '../i18n/ui';
+import Base from '../layouts/Base.astro';
+
+export const getStaticPaths = (() =>
+  LOCALES.flatMap((locale) =>
+    (Object.keys(ROUTES) as RouteKey[]).map((route) => ({
+      params: { path: localizedPath(route, locale).replace(/^\/|\/$/g, '') || undefined },
+      props: { locale, route },
+    })),
+  )) satisfies GetStaticPaths;
+
+interface Props {
+  locale: Locale;
+  route: RouteKey;
+}
+
+const { locale, route } = Astro.props;
+const title = route === 'home' ? t(locale, 'site.name') : pageTitles[route][locale];
+---
+
+<Base locale={locale} title={title} alternates={alternatePaths(route)}>
+  <h1>{title}</h1>
+  <p>{t(locale, 'pending')}</p>
+</Base>

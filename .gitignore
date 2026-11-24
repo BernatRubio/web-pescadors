@@ -1,0 +1,14 @@
+node_modules/
+dist/
+.astro/
+.turbo/
+.wrangler/
+.sanity/
+.env
+.env.*
+!.env.example
+test-results/
+playwright-report/
+
+# Per-machine Claude Code settings
+.claude/settings.local.json
