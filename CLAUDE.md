@@ -108,7 +108,7 @@ packages/shared  Locales, route map, translation helpers. Imported as TS source 
   - **Styling is Tailwind CSS v4.** Tokens come from `tokens.css`, which is generated, so never edit it by hand: change DESIGN.md, then run `pnpm design:tokens`.
   - Properties the exporter doesn't cover (font width axis, line height, tabular figures) are `@utility` classes in `src/styles/global.css`: `hull`, `headline-lg`, `headline-md`, `race-number`, `meta`, `wrap`.
   - Don't combine `meta` with a colour utility. On coloured backgrounds use `text-label-md font-semibold`.
-  - Crest red (`primary`) is for large text and backgrounds only. Text-size red is `primary-ink`. The hull band is used at most once per page.
+  - Coral red (`primary`) is for large text and backgrounds only. Text-size red is `primary-ink`. The hull band is used at most once per page.
 - **Brand assets:** the crest and team photos live in `docs/brand/`, which is gitignored. They're club-owned and the repo is public. They reach the site only through Sanity.
   - Originals go in `docs/brand/photos/`, and web copies in `docs/brand/photos-web/`, made with `magick in.jpg -auto-orient -resize '2400x2400>' -strip -quality 82 out.jpg`. **`-strip` removes metadata including GPS**, which matters because Sanity serves the original file.
   - Photos where minors may be identifiable are not uploaded without the club's image consent. Two of the current test photos are held back for that reason.

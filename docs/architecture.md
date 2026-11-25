@@ -39,7 +39,7 @@ After launch, the site is looked after by **non-technical volunteers**, on a sma
   - school pages
   - the join/school request form (a request only; visitors never get accounts)
   - teams, fleet, legal pages, analytics
-- **Brand:** palette taken from the crest (red `#F60304`, black, marlin navy `#0A2861`). Typography: Archivo, using its width axis.
+- **Brand:** palette taken from the club's 2024 marketing plan only: red `#E93939`/`#D60A0B`, black `#231F20`, charcoal `#545454` (no navy). Typography: Archivo, using its width axis.
 
 ## Consequences
 

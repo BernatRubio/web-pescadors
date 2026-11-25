@@ -42,7 +42,7 @@ export default function VideoFacade({ url, title, labels }: Props) {
     <button
       type="button"
       onClick={() => setPlaying(true)}
-      className="flex aspect-video w-full flex-col items-start justify-end gap-xs bg-secondary p-md text-left text-on-secondary transition-colors hover:bg-secondary-light"
+      className="flex aspect-video w-full flex-col items-start justify-end gap-xs bg-secondary p-md text-left text-on-secondary transition-colors hover:bg-secondary-dark"
     >
       <span className="headline-md">{title}</span>
       <span className="text-label-md font-semibold">

@@ -83,7 +83,7 @@
     outline-offset: 3px;
   }
 
-  /* Ink red is under 3:1 on navy and black (WCAG 1.4.11), so dark surfaces use white. */
+  /* Ink red is under 3:1 on charcoal and black (WCAG 1.4.11), so dark surfaces use white. */
   footer :focus-visible,
   dialog :focus-visible {
     outline-color: var(--color-on-secondary);

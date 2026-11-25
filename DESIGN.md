@@ -1,18 +1,18 @@
 ---
 version: alpha
 name: Pescadors Hull
-description: Design system for the Club Rem Pescadors Lloret website. Crest red, true black and marlin navy, with condensed hull lettering as the one bold device.
+description: Design system for the Club Rem Pescadors Lloret website. The club's red and black from its 2024 marketing plan, with charcoal grey and condensed hull lettering as the one bold device.
 colors:
-  primary: "#F60304"
-  primary-ink: "#D11113"
+  primary: "#E93939"
+  primary-ink: "#D60A0B"
   on-primary: "#FFFFFF"
-  secondary: "#0A2861"
-  secondary-light: "#16468F"
+  secondary: "#545454"
+  secondary-dark: "#333333"
   on-secondary: "#FFFFFF"
-  neutral: "#D6E4E7"
+  neutral: "#EDEDED"
   surface: "#FFFFFF"
-  on-surface: "#000000"
-  muted: "#4A5258"
+  on-surface: "#231F20"
+  muted: "#545454"
 typography:
   hull-display:
     fontFamily: Archivo Variable
@@ -110,7 +110,7 @@ components:
     backgroundColor: "{colors.secondary}"
     textColor: "{colors.on-secondary}"
   footer-link-hover:
-    backgroundColor: "{colors.secondary-light}"
+    backgroundColor: "{colors.secondary-dark}"
     textColor: "{colors.on-secondary}"
   divider:
     backgroundColor: "{colors.neutral}"
@@ -130,20 +130,20 @@ The website of **Club Rem Pescadors Lloret**, a fixed-seat sea-rowing club in Ll
 - **Main job:** show that the club is alive (next regatta, latest results, latest news) and make it easy to get in touch.
 - **Feel:** proud, outdoor, direct. Closer to a race programme and a painted boat than to a startup landing page.
 
-Two things are unmistakably Pescadors: the **crest** (a red llagut and a navy marlin in a red-lettered roundel) and the **boats**, red hulls with the club's name painted along the side in big white capitals.
+Two things are unmistakably Pescadors: the **crest** (a red llagut and a marlin in a red-lettered roundel) and the **boats**, red hulls with the club's name painted along the side in big white capitals. The club calls its colours "el Vermell i Negre": red and black.
 
 The design borrows that **hull lettering**, very condensed heavy capitals on a red band, as its one bold element. Everything else stays quiet. Real rowing photography carries the colour and energy.
 
 ## Colors
 
-Taken from the crest and the racing kit. Red dominates, black and white carry the structure, navy is the secondary.
+Taken from the club's 2024 marketing plan (*Pla de màrqueting*), and only from it. Red and black are the club's identity ("el Vermell i Negre"), charcoal grey is the secondary surface, white carries the space. There is no navy or blue: the crest keeps its own colours, but the site palette doesn't borrow them.
 
-- **Crest red (`primary`, #F60304):** large type, the hull band, primary buttons with white bold text. It is only 4.2:1 on white, so **never use it for small text**.
-- **Ink red (`primary-ink`, #D11113):** the red for text, links, hover and focus rings (≈5.5:1 on white).
-- **Marlin navy (`secondary`, #0A2861):** the footer, race-sheet headers, anything "sea". `secondary-light` (#16468F) for accents on navy.
-- **Spray (`neutral`, #D6E4E7):** the cool mist from the crest. Hairline dividers and quiet backgrounds.
-- **True black (`on-surface`, #000000)** on **white (`surface`)**: text and the crest outline. Not a tinted near-black.
-- **Muted (`muted`, #4A5258):** secondary text such as dates and locations (≥7:1 on white).
+- **Coral red (`primary`, #E93939):** the plan's covers, tent and banner. Large type, the hull band. It is only 4.1:1 on white, so **never use it for small text**.
+- **Ink red (`primary-ink`, #D60A0B):** the plan's heading red. The red for text, links, primary buttons, hover and focus rings (≈5.4:1 on white).
+- **Charcoal (`secondary`, #545454):** the plan's sponsor pages. The footer, race-sheet headers, the video facade. `secondary-dark` (#333333, the plan's grey body text) is the hover on charcoal: the plan has no lighter grey that keeps white text readable, so hover goes darker.
+- **Hairline grey (`neutral`, #EDEDED):** the plan's marlin watermark. Hairline dividers and image placeholders.
+- **Ink (`on-surface`, #231F20)** on **white (`surface`)**: the plan's text black. Body text and headings.
+- **Muted (`muted`, #545454):** secondary text such as dates and locations (≈7.6:1 on white). Same value as charcoal.
 
 ## Typography
 
@@ -159,13 +159,13 @@ One family, **Archivo** (variable: weight 100–900, width 62–125%), self-host
 
 - Left-aligned editorial layout on a 12-column grid, max width 80rem. Text is never centred except inside the hull band.
 - Mobile first: one column under 48rem. On desktop, home sections split 7/5 (main/secondary), never into equal card grids.
-- Sections are separated by whitespace (`section` spacing) and spray hairlines, not boxes.
+- Sections are separated by whitespace (`section` spacing) and hairline-grey lines, not boxes.
 
 Home page:
 
 ```text
 ┌──────────────────────────────────────────────┐
-│ [crest] Pescadors       Calendari Resultats …│  header: white, spray hairline
+│ [crest] Pescadors       Calendari Resultats …│  header: white, grey hairline
 ├──────────────────────────────────────────────┤
 │        full-bleed photo: crew on the water   │  first screen = photo + band only,
 │██████ CLUB REM PESCADORS █████████████████████│  band on the bottom edge of the screen
@@ -178,7 +178,7 @@ Home page:
 ├──────────────────────────────────────────────┤
 │ Galeria strip: 3–4 photos, edge to edge      │
 ├──────────────────────────────────────────────┤
-│ navy footer: contact, sponsors by tier       │
+│ charcoal footer: contact, sponsors by tier   │
 └──────────────────────────────────────────────┘
 ```
 
@@ -197,12 +197,12 @@ The first screen shows **only the hero photo and the hull band**, with the band'
 ### Other pages
 
 - **List pages** (news, calendar, results, galleries): the title on a short hull band, then a plain list.
-- **Results detail:** a race sheet with a navy header row, then rows led by a heavy condensed position number.
+- **Results detail:** a race sheet with a charcoal header row, then rows led by a heavy condensed position number.
 - **News detail:** cover image, title, date, a single text column, then the related regatta or album.
 
 ## Elevation & Depth
 
-Flat. Hierarchy comes from scale, weight, the hull band and the navy surfaces. No drop shadows. The only overlap is the hull band laid over the bottom edge of the hero photo.
+Flat. Hierarchy comes from scale, weight, the hull band and the charcoal surfaces. No drop shadows. The only overlap is the hull band laid over the bottom edge of the hero photo.
 
 ## Shapes
 
@@ -225,18 +225,18 @@ Square. Containers, images and bands have no radius (`rounded.none`). Buttons an
 
 ## Components
 
-- **Hull band** (`hull-band`): a full-width crest-red band with white hull-display capitals. Use it at most once per page: the home hero or the page title. White on crest red is 4.26:1, which passes WCAG AA only as **large text**, so hull-band text must never drop below 24px (the linter's contrast warning for this component is expected).
-- **Divider** (`divider`): a 1px spray hairline between sections.
+- **Hull band** (`hull-band`): a full-width coral-red band with white hull-display capitals. Use it at most once per page: the home hero or the page title. White on coral red is 4.11:1, which passes WCAG AA only as **large text**, so hull-band text must never drop below 24px (the linter's contrast warning for this component is expected).
+- **Divider** (`divider`): a 1px hairline-grey line between sections.
 - **Meta text** (`meta-text`): dates, places and captions in muted grey.
-- **Race sheet** (`race-sheet-header`, `race-sheet-position`): a semantic `<table>` with a navy header row and spray row dividers, led by the position number. Used for results and the calendar.
-- **Primary button** (`button-primary`): ink red with a white bold label, 2px radius, hover to black. It isn't crest red, because white on crest red is only 4.26:1, which fails AA for a small label. Use one per view.
+- **Race sheet** (`race-sheet-header`, `race-sheet-position`): a semantic `<table>` with a charcoal header row and hairline-grey row dividers, led by the position number. Used for results and the calendar.
+- **Primary button** (`button-primary`): ink red with a white bold label, 2px radius, hover to black. It isn't coral red, because white on coral red is only 4.11:1, which fails AA for a small label. Use one per view.
 - **Links** (`link`): ink red, underlined, with a visible 2px ink-red focus ring offset from the text.
-- **Footer** (`footer`): marlin navy, with contact details and sponsor logos grouped by tier (main sponsors larger). Links hover to `secondary-light` (`footer-link-hover`).
+- **Footer** (`footer`): charcoal, with contact details and sponsor logos grouped by tier (main sponsors larger). Links hover to `secondary-dark` (`footer-link-hover`).
 - **Gallery lightbox:** full-screen, black backdrop, keyboard and swipe navigation, returns focus to the thumbnail on close.
 
 ## Do's and Don'ts
 
-- Do keep crest red for large type, bands and buttons, and use `primary-ink` for any text-size red.
+- Do keep coral red (`primary`) for large type and bands, and use `primary-ink` for any text-size red.
 - Do let real photos carry the colour. No gradients, glows, blobs or decorative patterns.
 - Do strip photo metadata (GPS) before upload, and don't publish photos where minors are identifiable without the club's image consent.
 - Do use tables for tabular data (results, calendars), with tabular figures.

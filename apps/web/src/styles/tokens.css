@@ -1,15 +1,15 @@
 /* Generated from DESIGN.md by `pnpm design:tokens`. Do not edit by hand. */
 @theme {
-  --color-primary: #f60304;
-  --color-primary-ink: #d11113;
+  --color-primary: #e93939;
+  --color-primary-ink: #d60a0b;
   --color-on-primary: #ffffff;
-  --color-secondary: #0a2861;
-  --color-secondary-light: #16468f;
+  --color-secondary: #545454;
+  --color-secondary-dark: #333333;
   --color-on-secondary: #ffffff;
-  --color-neutral: #d6e4e7;
+  --color-neutral: #ededed;
   --color-surface: #ffffff;
-  --color-on-surface: #000000;
-  --color-muted: #4a5258;
+  --color-on-surface: #231f20;
+  --color-muted: #545454;
   --font-hull-display: "Archivo Variable";
   --font-headline-lg: "Archivo Variable";
   --font-headline-md: "Archivo Variable";
