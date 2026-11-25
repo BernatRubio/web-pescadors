@@ -11,7 +11,9 @@
       "!**/packages/shared/sanity/schema.json",
       "!**/packages/shared/sanity/types.ts",
       "!**/apps/web/src/styles/tokens.css",
-      "!**/DESIGN.md"
+      "!**/DESIGN.md",
+      "!.agents",
+      "!.claude"
     ]
   },
   "formatter": {
