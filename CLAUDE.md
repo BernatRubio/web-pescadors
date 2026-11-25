@@ -76,10 +76,16 @@ packages/shared  Locales, route map, translation helpers. Imported as TS source 
   - `getStaticPaths` runs in isolation, so helpers it uses must be defined inside it or imported.
 - **Data:** GROQ queries live in `src/lib/sanity/queries.ts` (`defineQuery`). Their result types are generated into `packages/shared/sanity/types.ts` (`@pescadors/shared/sanity`), so run the Studio's `typegen` after changing a query or a schema.
   - Views read through `src/lib/content.ts`, which caches each query once per build.
-  - Pick a language with `localizer(locale)` (`src/lib/i18n.ts`).
+  - Pick a language with `localizer(locale)` (`src/lib/i18n.ts`). When a value is a Catalan fallback on an es/en page, set `lang={l.lang(value)}` on its element (WCAG 3.1.2). `RichText.astro` does this itself.
+  - Counted UI text goes in `plurals` and is read with `tn(locale, key, n)` (`Intl.PluralRules`), never `'{n} fotos'`.
+  - Titles, descriptions, OG tags, JSON-LD and canonical/hreflang come from `pageMeta()` in `src/lib/seo.ts`. Untranslated posts and events point their canonical at the Catalan URL and print no hreflang alternates.
+  - Event "past/upcoming" uses `isPastEvent()` (`packages/shared/src/dates.ts`): an event without an end lasts its whole day in Europe/Madrid.
   - Images go through `Picture.astro` / `responsiveImage()` (Sanity CDN `srcset` + LQIP). Rich text goes through `RichText.astro`.
 - **Interactive islands** are React (`Lightbox.tsx` on the native `<dialog>`, `VideoFacade.tsx` click-to-load YouTube). Everything else is static HTML.
+  - The gallery grid is static `<a data-photo>` links rendered by `AlbumView.astro`. The Lightbox island reads its photo data from those links' data attributes, so keep island props small (labels only).
+- `src/pages/404.astro` is the single trilingual 404. `wrangler.jsonc` serves it with `assets.not_found_handling: "404-page"`.
 - `layouts/Base.astro` sets `<html lang>`, canonical, hreflang (+ `x-default` → Catalan), OG tags, the header (crest, mobile menu, language links) and the footer (sponsors by tier).
+- The header menu collapses below `lg` (64rem): between 48 and 64rem the seven Catalan labels wrap and break `--header-h`.
 - `PUBLIC_NOINDEX=true` (the MVP on workers.dev) adds a robots meta tag, a `robots.txt` `Disallow` and an `X-Robots-Tag` header (`astro.config.mjs`).
 
 ### Studio
@@ -117,9 +123,11 @@ packages/shared  Locales, route map, translation helpers. Imported as TS source 
 - **Deploy:** the MVP is the Worker **`web`** at **https://web.pescadors.workers.dev**, on the developer's Cloudflare account (account subdomain `pescadors`). `PUBLIC_NOINDEX=true` keeps it out of search engines.
   - Manual deploy: `pnpm --filter @pescadors/web build && pnpm --filter @pescadors/web exec wrangler deploy`.
   - Until the Sanity webhook exists, published content only goes live after a manual rebuild.
-- **CI/CD:** `.github/workflows/ci.yml` runs lint, design:lint, check, test, build and e2e. It deploys with `wrangler deploy` on `main` (and on the `sanity-publish` repository_dispatch), but only when the `CLOUDFLARE_ACCOUNT_ID` variable is set.
+- **CI/CD:** `.github/workflows/ci.yml` runs lint, design:lint, check, test, build and e2e. It deploys with `wrangler deploy` on `main` (on the `sanity-publish` repository_dispatch, and on a daily 04:00 UTC cron that keeps build-time dates fresh), but only when the `CLOUDFLARE_ACCOUNT_ID` variable is set.
+  - Until `PUBLIC_SANITY_PROJECT_ID` is set as a repo variable, CI's e2e and axe tests only see empty states. Run them locally with `apps/web/.env` to cover real content.
   - Not set up yet: the repo settings (`CLOUDFLARE_API_TOKEN` secret, `CLOUDFLARE_ACCOUNT_ID` and `PUBLIC_SANITY_PROJECT_ID` variables) and the Sanity → GitHub webhook.
   - Planned: content-only runs (`repository_dispatch`) skip the code checks and just build + deploy (about 1–1.5 min instead of 4–6).
+- **`.agents/` and `.claude/` are excluded from Biome**: they hold vendored skills (`skills-lock.json`), and `pnpm format` would rewrite their Markdown front matter.
 - **DESIGN.md is excluded from Biome**, because Biome's Markdown formatter flattens YAML front matter. Validate it with `pnpm design:lint`; the two expected warnings are the hull band's large-text contrast and `motion`, which CLI 0.4 doesn't know yet.
 - **Open questions for the club:**
   - **The name:** the crest says "Club Rem Pescadors Lloret", the Instagram is `@clubrempescadors_`, and the press calls it "Es Pescadors".
