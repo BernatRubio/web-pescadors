@@ -28,7 +28,24 @@ export function pickLocale<T>(
   values: LocalizedValue<T> | null | undefined,
   locale: Locale,
 ): T | undefined {
+  return pickLocaleWithLang(values, locale)?.value;
+}
+
+/**
+ * Like `pickLocale`, but also says which language the value is in, so a fallback
+ * can be marked up with its own `lang` (WCAG 3.1.2).
+ */
+export function pickLocaleWithLang<T>(
+  values: LocalizedValue<T> | null | undefined,
+  locale: Locale,
+): { value: T; lang: Locale } | undefined {
   if (!values?.length) return undefined;
-  const find = (lang: string) => values.find((v) => v.language === lang && v.value != null)?.value;
-  return find(locale) ?? find(DEFAULT_LOCALE) ?? values.find((v) => v.value != null)?.value;
+  const filled = values.filter(
+    (v): v is { language: Locale; value: T } => v.value != null && isLocale(v.language),
+  );
+  const hit =
+    filled.find((v) => v.language === locale) ??
+    filled.find((v) => v.language === DEFAULT_LOCALE) ??
+    filled[0];
+  return hit ? { value: hit.value, lang: hit.language } : undefined;
 }
