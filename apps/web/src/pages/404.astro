@@ -1,0 +1,44 @@
+---
+/**
+ * One 404 for every language: the server can't know which one the visitor reads, so it's
+ * Catalan first with short Spanish and English lines, each marked with its own `lang`.
+ */
+import { alternatePaths, LOCALE_TAGS, type Locale, localizedPath } from '@pescadors/shared';
+import HullBand from '../components/HullBand.astro';
+import { pageTitles, t } from '../i18n/ui';
+import Base from '../layouts/Base.astro';
+
+const others: Locale[] = ['es', 'en'];
+---
+
+<Base
+  locale="ca"
+  meta={{ title: t('ca', 'notFound.title'), translatedIn: ['ca'] }}
+  alternates={alternatePaths('home')}
+  noindex
+>
+  <HullBand text="404" as="p" />
+  <div class="wrap py-xl">
+    <h1 class="headline-lg max-w-[24ch]">{t('ca', 'notFound.title')}</h1>
+    <p class="mt-sm max-w-(--spacing-measure) text-body-lg">{t('ca', 'notFound.text')}</p>
+    <p class="mt-md flex flex-wrap gap-x-md gap-y-sm">
+      <a class="button-primary" href={localizedPath('home', 'ca')}>{t('ca', 'notFound.home')}</a>
+    </p>
+    <p class="mt-md flex flex-wrap gap-x-md">
+      <a href={localizedPath('calendar', 'ca')}>{pageTitles.calendar.ca}</a>
+      <a href={localizedPath('results', 'ca')}>{pageTitles.results.ca}</a>
+      <a href={localizedPath('news', 'ca')}>{pageTitles.news.ca}</a>
+    </p>
+
+    <ul class="mt-xl space-y-sm border-t border-neutral pt-md">
+      {
+        others.map((locale) => (
+          <li lang={LOCALE_TAGS[locale]}>
+            {t(locale, 'notFound.title')}.{' '}
+            <a href={localizedPath('home', locale)}>{t(locale, 'notFound.home')}</a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</Base>

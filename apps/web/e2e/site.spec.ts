@@ -81,7 +81,7 @@ test('gallery lightbox: opens, arrow keys move, Esc closes and returns focus', a
   const album = page.locator('main li a').first();
   test.skip((await album.count()) === 0, 'No albums in the dataset');
   await album.click();
-  const thumbs = page.locator('main ul button');
+  const thumbs = page.locator('main a[data-photo]');
   await expect(thumbs.first()).toBeVisible();
   await thumbs.first().click();
   const dialog = page.getByRole('dialog');
@@ -104,4 +104,28 @@ test('sponsors page groups sponsors by tier', async ({ page }) => {
     await expect(tier.getByRole('heading', { level: 2 })).toBeVisible();
     await expect(tier.locator('li').first()).toBeVisible();
   }
+});
+
+test('unknown addresses get the trilingual 404 page', async ({ page }) => {
+  const response = await page.goto('/aquesta-pagina-no-existeix/');
+  expect(response?.status()).toBe(404);
+  await expect(page.locator('h1')).toHaveText('No hem trobat aquesta pàgina');
+  await expect(page.locator('li[lang="en"]')).toContainText('We couldn’t find this page');
+});
+
+test('a result sheet scrolls with the keyboard', async ({ page }) => {
+  await page.goto('/resultats/');
+  const first = page.locator('main table a').first();
+  test.skip((await first.count()) === 0, 'No results in the dataset');
+  await first.click();
+  const region = page.getByRole('region');
+  await expect(region).toHaveAttribute('tabindex', '0');
+  await expect(region.locator('caption')).toHaveCount(1);
+});
+
+test('counts use the right plural form', async ({ page }) => {
+  await page.goto('/galeria/');
+  const counts = await page.locator('main li p span').allTextContents();
+  test.skip(counts.length === 0, 'No albums in the dataset');
+  for (const text of counts) expect(text).not.toMatch(/^1 fotos$/);
 });

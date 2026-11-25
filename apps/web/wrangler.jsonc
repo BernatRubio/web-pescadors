@@ -6,7 +6,9 @@
   "main": "@astrojs/cloudflare/entrypoints/server",
   "assets": {
     "directory": "./dist",
-    "binding": "ASSETS"
+    "binding": "ASSETS",
+    // Unknown addresses get src/pages/404.astro (dist/404.html) with a 404 status.
+    "not_found_handling": "404-page"
   },
   "observability": {
     "enabled": true

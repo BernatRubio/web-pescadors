@@ -1,5 +1,8 @@
 ---
+// Preloaded so the hull band doesn't render in a wide fallback font and reflow the hero.
+import archivoLatin from '@fontsource-variable/archivo/files/archivo-latin-wdth-normal.woff2?url';
 import {
+  DEFAULT_LOCALE,
   LOCALE_LABELS,
   LOCALE_TAGS,
   LOCALES,
@@ -11,25 +14,31 @@ import SiteFooter from '../components/SiteFooter.astro';
 import { mainNav, pageTitles, t } from '../i18n/ui';
 import { getSettings } from '../lib/content';
 import { imageUrl } from '../lib/sanity/image';
+import type { PageMeta } from '../lib/seo';
 import '../styles/global.css';
 
 interface Props {
   locale: Locale;
-  title: string;
-  description?: string;
+  meta: Pick<PageMeta, 'title'> & Partial<PageMeta>;
   /** Same page in each language (hreflang + language switcher). */
   alternates: Record<Locale, string>;
   /** Highlights the current section in the menu. */
   section?: RouteKey;
-  ogImage?: string | null;
+  /** Keep this page out of search engines even on the final domain (e.g. the 404). */
+  noindex?: boolean;
 }
 
-const { locale, title, description, alternates, section, ogImage } = Astro.props;
+const { locale, meta, alternates, section } = Astro.props;
+const { title, description, ogImage, ogType = 'website', jsonLd } = meta;
+const translatedIn = meta.translatedIn ?? [...LOCALES];
 const settings = await getSettings();
 const siteName = settings?.clubName ?? t(locale, 'site.name');
 const fullTitle = title === siteName ? title : `${title} | ${siteName}`;
-const canonical = new URL(alternates[locale], Astro.site);
-const noindex = import.meta.env.PUBLIC_NOINDEX === 'true';
+// An untranslated page is the Catalan text again: point search engines at the original.
+const canonicalLocale = translatedIn.includes(locale) ? locale : DEFAULT_LOCALE;
+const canonical = new URL(alternates[canonicalLocale], Astro.site);
+const hreflangs = LOCALES.filter((l) => translatedIn.includes(l) || l === DEFAULT_LOCALE);
+const noindex = import.meta.env.PUBLIC_NOINDEX === 'true' || Astro.props.noindex;
 const logo = imageUrl(settings?.logo, 128);
 const shareImage = ogImage ?? imageUrl(settings?.logo, 1200);
 ---
@@ -44,18 +53,24 @@ const shareImage = ogImage ?? imageUrl(settings?.logo, 1200);
     {noindex && <meta name="robots" content="noindex, nofollow" />}
     <link rel="canonical" href={canonical} />
     {
-      LOCALES.map((l) => (
-        <link rel="alternate" hreflang={LOCALE_TAGS[l]} href={new URL(alternates[l], Astro.site)} />
-      ))
+      hreflangs.length > 1 &&
+        hreflangs.map((l) => (
+          <link rel="alternate" hreflang={LOCALE_TAGS[l]} href={new URL(alternates[l], Astro.site)} />
+        ))
     }
-    <link rel="alternate" hreflang="x-default" href={new URL(alternates.ca, Astro.site)} />
+    {hreflangs.length > 1 && <link rel="alternate" hreflang="x-default" href={new URL(alternates.ca, Astro.site)} />}
+    <link rel="preload" href={archivoLatin} as="font" type="font/woff2" crossorigin />
+    <link rel="preconnect" href="https://cdn.sanity.io" />
     {logo && <link rel="icon" href={imageUrl(settings?.logo, 64)} />}
+    <meta property="og:site_name" content={siteName} />
     <meta property="og:title" content={fullTitle} />
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content={ogType} />
     <meta property="og:url" content={canonical} />
     <meta property="og:locale" content={LOCALE_TAGS[locale].replace('-', '_')} />
     {description && <meta property="og:description" content={description} />}
     {shareImage && <meta property="og:image" content={shareImage} />}
+    <meta name="twitter:card" content={ogImage ? 'summary_large_image' : 'summary'} />
+    {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd).replaceAll('<', '\\u003c')} />}
     <script is:inline>
       document.documentElement.classList.add('js');
     </script>
@@ -76,7 +91,7 @@ const shareImage = ogImage ?? imageUrl(settings?.logo, 1200);
           </span>
         </a>
 
-        <nav aria-label={t(locale, 'lang.label')} class="md:order-last">
+        <nav aria-label={t(locale, 'lang.label')} class="lg:order-last">
           <ul class="flex gap-sm">
             {
               LOCALES.map((l) => (
@@ -85,11 +100,11 @@ const shareImage = ogImage ?? imageUrl(settings?.logo, 1200);
                     href={alternates[l]}
                     hreflang={LOCALE_TAGS[l]}
                     lang={LOCALE_TAGS[l]}
-                    aria-label={LOCALE_LABELS[l]}
                     aria-current={l === locale ? 'true' : undefined}
                     class="meta no-underline hover:text-primary-ink aria-[current=true]:text-on-surface aria-[current=true]:underline"
                   >
                     {l}
+                    <span class="sr-only"> {LOCALE_LABELS[l]}</span>
                   </a>
                 </li>
               ))
@@ -99,7 +114,7 @@ const shareImage = ogImage ?? imageUrl(settings?.logo, 1200);
 
         <button
           type="button"
-          class="lightbox-button px-sm py-xs md:hidden"
+          class="button-outline px-sm py-xs lg:hidden"
           aria-expanded="false"
           aria-controls="site-nav"
           data-nav-toggle
@@ -107,9 +122,9 @@ const shareImage = ogImage ?? imageUrl(settings?.logo, 1200);
           {t(locale, 'nav.open')}
         </button>
 
-        <div id="site-nav" class="site-nav w-full md:flex md:w-auto md:items-center md:gap-lg">
+        <div id="site-nav" class="site-nav w-full lg:flex lg:w-auto lg:items-center lg:gap-lg">
           <nav aria-label={t(locale, 'nav.label')}>
-            <ul class="flex flex-col gap-xs py-sm md:flex-row md:gap-md md:py-0">
+            <ul class="flex flex-col gap-xs py-sm lg:flex-row lg:gap-md lg:py-0">
               {
                 mainNav.map((key) => (
                   <li>
@@ -146,8 +161,10 @@ const shareImage = ogImage ?? imageUrl(settings?.logo, 1200);
 </html>
 
 <style>
-  /* Without JS the menu is always visible. With JS it collapses on small screens. */
-  @media (width < 48rem) {
+  /* Without JS the menu is always visible. With JS it collapses below 64rem, where the
+     seven Catalan labels no longer fit on one row next to the crest (the header would wrap
+     and break --header-h). */
+  @media (width < 64rem) {
     :global(.js) .site-nav {
       display: none;
     }

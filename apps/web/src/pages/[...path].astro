@@ -13,20 +13,10 @@ import {
   type RouteKey,
 } from '@pescadors/shared';
 import type { GetStaticPaths } from 'astro';
-import { mvpSections, pageTitles, t } from '../i18n/ui';
+import { mvpSections } from '../i18n/ui';
 import Base from '../layouts/Base.astro';
-import {
-  type Album,
-  type ClubEvent,
-  getAlbums,
-  getEvents,
-  getPosts,
-  getResults,
-  type Post,
-  type Result,
-} from '../lib/content';
-import { localizer } from '../lib/i18n';
-import { imageUrl } from '../lib/sanity/image';
+import { getAlbums, getEvents, getPosts, getResults } from '../lib/content';
+import { type Detail, pageMeta } from '../lib/seo';
 import AlbumView from '../views/AlbumView.astro';
 import CalendarView from '../views/CalendarView.astro';
 import ClubView from '../views/ClubView.astro';
@@ -39,12 +29,6 @@ import NewsListView from '../views/NewsListView.astro';
 import ResultDetailView from '../views/ResultDetailView.astro';
 import ResultsListView from '../views/ResultsListView.astro';
 import SponsorsView from '../views/SponsorsView.astro';
-
-type Detail =
-  | { kind: 'post'; post: Post }
-  | { kind: 'event'; event: ClubEvent }
-  | { kind: 'result'; result: Result }
-  | { kind: 'album'; album: Album };
 
 interface Props {
   locale: Locale;
@@ -101,36 +85,10 @@ export const getStaticPaths = (async () => {
 }) satisfies GetStaticPaths;
 
 const { locale, route, slug, detail } = Astro.props;
-const l = localizer(locale);
-
-let title: string = route === 'home' ? t(locale, 'site.name') : pageTitles[route][locale];
-let description: string | undefined;
-let ogImage: string | null = null;
-
-if (detail?.kind === 'post') {
-  title = l(detail.post.title) ?? title;
-  description = l(detail.post.excerpt);
-  ogImage = imageUrl(detail.post.cover, 1200);
-} else if (detail?.kind === 'event') {
-  title = l(detail.event.title) ?? title;
-  description = l(detail.event.summary);
-  ogImage = imageUrl(detail.event.poster, 1200);
-} else if (detail?.kind === 'result') {
-  title = `${pageTitles.results[locale]}: ${l(detail.result.event?.title) ?? ''}`;
-} else if (detail?.kind === 'album') {
-  title = l(detail.album.title) ?? title;
-  ogImage = imageUrl(detail.album.images?.[0], 1200);
-}
+const meta = await pageMeta(locale, route, detail, Astro.site);
 ---
 
-<Base
-  locale={locale}
-  title={title}
-  description={description}
-  alternates={alternatePaths(route, slug)}
-  section={route}
-  ogImage={ogImage}
->
+<Base locale={locale} meta={meta} alternates={alternatePaths(route, slug)} section={route}>
   {
     detail?.kind === 'post' ? (
       <NewsDetailView locale={locale} post={detail.post} />
