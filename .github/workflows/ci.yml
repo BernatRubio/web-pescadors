@@ -7,6 +7,10 @@ on:
   # Sent by the Sanity webhook when editors publish content.
   repository_dispatch:
     types: [sanity-publish]
+  # Daily rebuild: "upcoming" events, the next regatta and sponsor dates are worked out
+  # at build time, so the site must be rebuilt even when nobody publishes.
+  schedule:
+    - cron: "0 4 * * *"
   workflow_dispatch:
 
 concurrency:
