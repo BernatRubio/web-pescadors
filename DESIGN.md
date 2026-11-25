@@ -3,7 +3,7 @@ version: alpha
 name: Pescadors Hull
 description: Design system for the Club Rem Pescadors Lloret website. The club's red and black from its 2024 marketing plan, with charcoal grey and condensed hull lettering as the one bold device.
 colors:
-  primary: "#E93939"
+  primary: "#D60A0B"
   primary-ink: "#D60A0B"
   on-primary: "#FFFFFF"
   secondary: "#545454"
@@ -138,8 +138,9 @@ The design borrows that **hull lettering**, very condensed heavy capitals on a r
 
 Taken from the club's 2024 marketing plan (*Pla de màrqueting*), and only from it. Red and black are the club's identity ("el Vermell i Negre"), charcoal grey is the secondary surface, white carries the space. There is no navy or blue: the crest keeps its own colours, but the site palette doesn't borrow them.
 
-- **Coral red (`primary`, #E93939):** the plan's covers, tent and banner. Large type, the hull band. It is only 4.1:1 on white, so **never use it for small text**.
-- **Ink red (`primary-ink`, #D60A0B):** the plan's heading red. The red for text, links, primary buttons, hover and focus rings (≈5.4:1 on white).
+- **Pescadors red (`primary`, #D60A0B):** the plan's heading red. The hull band and large type. White on it is 5.4:1, so white text of any size passes AA.
+- **Ink red (`primary-ink`, #D60A0B):** the same red, as the token for text, links, primary buttons, hover and focus rings (5.4:1 on white). It's kept separate so text red can change without touching the band.
+- The plan's lighter coral (#E93939, on its covers) was tried for the band and read too light on screen, so it isn't used.
 - **Charcoal (`secondary`, #545454):** the plan's sponsor pages. The footer, race-sheet headers, the video facade. `secondary-dark` (#333333, the plan's grey body text) is the hover on charcoal: the plan has no lighter grey that keeps white text readable, so hover goes darker.
 - **Hairline grey (`neutral`, #EDEDED):** the plan's marlin watermark. Hairline dividers and image placeholders.
 - **Ink (`on-surface`, #231F20)** on **white (`surface`)**: the plan's text black. Body text and headings.
@@ -225,18 +226,18 @@ Square. Containers, images and bands have no radius (`rounded.none`). Buttons an
 
 ## Components
 
-- **Hull band** (`hull-band`): a full-width coral-red band with white hull-display capitals. Use it at most once per page: the home hero or the page title. White on coral red is 4.11:1, which passes WCAG AA only as **large text**, so hull-band text must never drop below 24px (the linter's contrast warning for this component is expected).
+- **Hull band** (`hull-band`): a full-width Pescadors-red band with white hull-display capitals. Use it at most once per page: the home hero or the page title. White on it is 5.4:1.
 - **Divider** (`divider`): a 1px hairline-grey line between sections.
 - **Meta text** (`meta-text`): dates, places and captions in muted grey.
 - **Race sheet** (`race-sheet-header`, `race-sheet-position`): a semantic `<table>` with a charcoal header row and hairline-grey row dividers, led by the position number. Used for results and the calendar.
-- **Primary button** (`button-primary`): ink red with a white bold label, 2px radius, hover to black. It isn't coral red, because white on coral red is only 4.11:1, which fails AA for a small label. Use one per view.
+- **Primary button** (`button-primary`): ink red with a white bold label, 2px radius, hover to black. Use one per view.
 - **Links** (`link`): ink red, underlined, with a visible 2px ink-red focus ring offset from the text.
 - **Footer** (`footer`): charcoal, with contact details and sponsor logos grouped by tier (main sponsors larger). Links hover to `secondary-dark` (`footer-link-hover`).
 - **Gallery lightbox:** full-screen, black backdrop, keyboard and swipe navigation, returns focus to the thumbnail on close.
 
 ## Do's and Don'ts
 
-- Do keep coral red (`primary`) for large type and bands, and use `primary-ink` for any text-size red.
+- Do use `primary` for bands and large type, and `primary-ink` for any text-size red.
 - Do let real photos carry the colour. No gradients, glows, blobs or decorative patterns.
 - Do strip photo metadata (GPS) before upload, and don't publish photos where minors are identifiable without the club's image consent.
 - Do use tables for tabular data (results, calendars), with tabular figures.

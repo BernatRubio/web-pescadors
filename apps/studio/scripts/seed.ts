@@ -51,7 +51,7 @@ const placeholderPhoto = (
 ) => `<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1067" viewBox="0 0 1600 1067">
   <rect width="1600" height="1067" fill="${n % 2 ? '#545454' : '#333333'}"/>
   <rect y="${520 + (n % 3) * 60}" width="1600" height="6" fill="#EDEDED" opacity=".5"/>
-  <path d="M${260 + n * 40} 640 h${900 - n * 30} l-80 90 h-${740 - n * 30} z" fill="#E93939"/>
+  <path d="M${260 + n * 40} 640 h${900 - n * 30} l-80 90 h-${740 - n * 30} z" fill="#D60A0B"/>
   <text x="80" y="160" font-family="sans-serif" font-size="64" font-weight="700" fill="#FFFFFF">Foto d'exemple ${n}</text>
 </svg>`;
 
@@ -319,7 +319,7 @@ async function seed() {
 
   // Sponsors (placeholders, never real brands without permission).
   const sponsors = [
-    { id: 'sponsor-a', name: 'Patrocinador A', tier: 'principal', color: '#E93939' },
+    { id: 'sponsor-a', name: 'Patrocinador A', tier: 'principal', color: '#D60A0B' },
     { id: 'sponsor-b', name: 'Col·laborador B', tier: 'collaborador', color: '#545454' },
     { id: 'sponsor-c', name: 'Institució C', tier: 'institucional', color: '#231F20' },
   ];

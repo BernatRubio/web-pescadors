@@ -108,7 +108,7 @@ packages/shared  Locales, route map, translation helpers. Imported as TS source 
   - **Styling is Tailwind CSS v4.** Tokens come from `tokens.css`, which is generated, so never edit it by hand: change DESIGN.md, then run `pnpm design:tokens`.
   - Properties the exporter doesn't cover (font width axis, line height, tabular figures) are `@utility` classes in `src/styles/global.css`: `hull`, `headline-lg`, `headline-md`, `race-number`, `meta`, `wrap`.
   - Don't combine `meta` with a colour utility. On coloured backgrounds use `text-label-md font-semibold`.
-  - Coral red (`primary`) is for large text and backgrounds only. Text-size red is `primary-ink`. The hull band is used at most once per page.
+  - `primary` (#D60A0B) is for bands and large type; text-size red uses `primary-ink` (same value today). The hull band is used at most once per page.
 - **Brand assets:** the crest and team photos live in `docs/brand/`, which is gitignored. They're club-owned and the repo is public. They reach the site only through Sanity.
   - Originals go in `docs/brand/photos/`, and web copies in `docs/brand/photos-web/`, made with `magick in.jpg -auto-orient -resize '2400x2400>' -strip -quality 82 out.jpg`. **`-strip` removes metadata including GPS**, which matters because Sanity serves the original file.
   - Photos where minors may be identifiable are not uploaded without the club's image consent. Two of the current test photos are held back for that reason.
@@ -128,7 +128,7 @@ packages/shared  Locales, route map, translation helpers. Imported as TS source 
   - Not set up yet: the repo settings (`CLOUDFLARE_API_TOKEN` secret, `CLOUDFLARE_ACCOUNT_ID` and `PUBLIC_SANITY_PROJECT_ID` variables) and the Sanity → GitHub webhook.
   - Planned: content-only runs (`repository_dispatch`) skip the code checks and just build + deploy (about 1–1.5 min instead of 4–6).
 - **`.agents/` and `.claude/` are excluded from Biome**: they hold vendored skills (`skills-lock.json`), and `pnpm format` would rewrite their Markdown front matter.
-- **DESIGN.md is excluded from Biome**, because Biome's Markdown formatter flattens YAML front matter. Validate it with `pnpm design:lint`; the two expected warnings are the hull band's large-text contrast and `motion`, which CLI 0.4 doesn't know yet.
+- **DESIGN.md is excluded from Biome**, because Biome's Markdown formatter flattens YAML front matter. Validate it with `pnpm design:lint`; the one expected warning is `motion`, which CLI 0.4 doesn't know yet.
 - **Open questions for the club:**
   - **The name:** the crest says "Club Rem Pescadors Lloret", the Instagram is `@clubrempescadors_`, and the press calls it "Es Pescadors".
   - **A domain:** `clubrempescadors.cat` was unregistered on 2026-11-24. Buy it before the address is used anywhere public, because a workers.dev address changes when the site moves accounts.
