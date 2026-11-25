@@ -12,14 +12,17 @@ function isEmpty(value: unknown): boolean {
   return false;
 }
 
+/** True when an internationalized field has a non-empty Catalan value. */
+export function hasCatalan(items: unknown): boolean {
+  const ca = (items as LocalizedItem[] | undefined)?.find((i) => i.language === DEFAULT_LOCALE);
+  return !!ca && !isEmpty(ca.value);
+}
+
 /** Validation for internationalized fields: Catalan is required, es/en are optional. */
 export const requireCatalan =
   (label = 'Aquest camp') =>
   (rule: Rule) =>
-    rule.custom((items) => {
-      const ca = (items as LocalizedItem[] | undefined)?.find((i) => i.language === DEFAULT_LOCALE);
-      return ca && !isEmpty(ca.value) ? true : `${label} és obligatori en català.`;
-    });
+    rule.custom((items) => (hasCatalan(items) ? true : `${label} és obligatori en català.`));
 
 /** Catalan value of an internationalized field (used for previews and slugs). */
 export function caValue(field: unknown): string | undefined {

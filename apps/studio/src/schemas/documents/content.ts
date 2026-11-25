@@ -1,3 +1,4 @@
+import { youtubeId } from '@pescadors/shared';
 import { defineArrayMember, defineField, defineType, type PreviewValue } from 'sanity';
 import { caValue, requireCatalan, slugFromCatalanTitle } from '../../lib/i18n';
 
@@ -123,8 +124,14 @@ export const album = defineType({
             defineField({
               name: 'url',
               title: 'Enllaç de YouTube',
+              description: 'Ex.: https://www.youtube.com/watch?v=… o https://youtu.be/…',
               type: 'url',
-              validation: (r) => r.required(),
+              validation: (r) =>
+                r
+                  .required()
+                  .custom((url) =>
+                    !url || youtubeId(url) ? true : 'Ha de ser un enllaç a un vídeo de YouTube.',
+                  ),
             }),
             defineField({ name: 'title', title: 'Títol', type: 'internationalizedArrayString' }),
           ],
@@ -353,6 +360,9 @@ export const clubDocument = defineType({
   preview: titlePreview('file', 'kind'),
 });
 
+/** The web reads the club page by this slug (`clubPageQuery`), so it must not change. */
+const CLUB_PAGE_SLUG = 'el-club';
+
 export const page = defineType({
   name: 'page',
   title: 'Pàgina',
@@ -360,7 +370,12 @@ export const page = defineType({
   icon: () => '📃',
   fields: [
     titleField,
-    slugField,
+    defineField({
+      ...slugField,
+      description: `Es genera a partir del títol en català. La pàgina del club ha de tenir l’adreça "${CLUB_PAGE_SLUG}" i no es pot canviar.`,
+      readOnly: ({ document }) =>
+        (document as { slug?: { current?: string } } | undefined)?.slug?.current === CLUB_PAGE_SLUG,
+    }),
     defineField({ name: 'image', title: 'Imatge', type: 'figure' }),
     defineField({
       name: 'body',

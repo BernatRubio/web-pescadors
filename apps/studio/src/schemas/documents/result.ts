@@ -68,8 +68,13 @@ export const result = defineType({
             defineField({
               name: 'time',
               title: 'Temps',
-              description: 'Ex.: 12:34.56',
+              description: 'Minuts:segons.centèsimes, ex.: 12:34.56',
               type: 'string',
+              validation: (r) =>
+                r.regex(/^(\d+:)?\d{1,2}:\d{2}([.,]\d{1,3})?$/, {
+                  name: 'mm:ss.cc',
+                  invert: false,
+                }),
             }),
             defineField({ name: 'notes', title: 'Notes', type: 'internationalizedArrayString' }),
           ],
