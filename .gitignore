@@ -10,8 +10,10 @@ dist/
 test-results/
 playwright-report/
 
-# Per-machine Claude Code settings
-.claude/settings.local.json
+# Agent config and vendored skills: kept local
+.claude/
+.agents/
+skills-lock.json
 
 # Club-owned brand assets (crest, team photos): kept local, never published
 docs/brand/
