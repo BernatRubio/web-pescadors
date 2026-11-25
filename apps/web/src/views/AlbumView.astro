@@ -1,10 +1,10 @@
 ---
 import { type Locale, localizedPath } from '@pescadors/shared';
-import Lightbox, { type LightboxPhoto } from '../components/Lightbox';
+import Lightbox from '../components/Lightbox';
 import VideoFacade from '../components/VideoFacade';
 import { pageTitles, t } from '../i18n/ui';
 import type { Album } from '../lib/content';
-import { longDate } from '../lib/format';
+import { longDate, machineDate } from '../lib/format';
 import { localizer } from '../lib/i18n';
 import { responsiveImage } from '../lib/sanity/image';
 
@@ -16,21 +16,17 @@ interface Props {
 const { locale, album } = Astro.props;
 const l = localizer(locale);
 
-const photos: LightboxPhoto[] = (album.images ?? []).flatMap((img) => {
+const photos = (album.images ?? []).flatMap((img, i) => {
   const full = responsiveImage(img, { width: 2000 });
   const thumb = responsiveImage(img, { width: 480, ratio: 1 });
   if (!full || !thumb) return [];
   const aspect = img.asset?.metadata?.dimensions?.aspectRatio ?? 1.5;
   return [
     {
-      key: img._key,
-      src: full.src,
-      srcset: full.srcset,
-      thumbSrc: thumb.src,
-      thumbSrcset: thumb.srcset,
-      width: 2000,
+      full,
+      thumb,
       height: Math.round(2000 / aspect),
-      alt: l(img.alt) ?? '',
+      alt: l(img.alt) || t(locale, 'lightbox.position').replace('{n}', String(i + 1)),
       caption: l(img.caption),
       lqip: img.asset?.metadata?.lqip ?? undefined,
     },
@@ -40,9 +36,9 @@ const photos: LightboxPhoto[] = (album.images ?? []).flatMap((img) => {
 
 <article class="wrap py-xl">
   <p class="meta"><a href={localizedPath('gallery', locale)}>{pageTitles.gallery[locale]}</a></p>
-  <h1 class="headline-lg mt-sm max-w-[28ch]">{l(album.title)}</h1>
+  <h1 class="headline-lg mt-sm max-w-[28ch]" lang={l.lang(album.title)}>{l(album.title)}</h1>
   <p class="meta mt-sm">
-    {longDate(album.date, locale)}
+    <time datetime={machineDate(album.date)}>{longDate(album.date, locale)}</time>
     {
       album.event?.slug && (
         <a class="block" href={localizedPath('calendar', locale, album.event.slug)}>{l(album.event.title)}</a>
@@ -50,10 +46,42 @@ const photos: LightboxPhoto[] = (album.images ?? []).flatMap((img) => {
     }
   </p>
 
-  <div class="mt-lg">
+  <!-- Static thumbnail links; the Lightbox island reads their data attributes. -->
+  <div class="mt-lg" data-lightbox>
+    <ul class="grid grid-cols-2 gap-xs sm:grid-cols-3 lg:grid-cols-4">
+      {
+        photos.map((p) => (
+          <li>
+            <a
+              href={p.full.src}
+              class="block cursor-zoom-in"
+              aria-label={p.alt}
+              data-photo
+              data-srcset={p.full.srcset}
+              data-width={2000}
+              data-height={p.height}
+              data-alt={p.alt}
+              data-caption={p.caption}
+            >
+              <img
+                src={p.thumb.src}
+                srcset={p.thumb.srcset}
+                sizes="(min-width: 64rem) 25vw, (min-width: 40rem) 33vw, 50vw"
+                alt=""
+                loading="lazy"
+                decoding="async"
+                width="480"
+                height="480"
+                class="aspect-square w-full bg-neutral object-cover"
+                style={p.lqip ? `background-image:url(${p.lqip});background-size:cover` : undefined}
+              />
+            </a>
+          </li>
+        ))
+      }
+    </ul>
     <Lightbox
-      client:visible
-      photos={photos}
+      client:idle
       labels={{
         close: t(locale, 'lightbox.close'),
         prev: t(locale, 'lightbox.prev'),
