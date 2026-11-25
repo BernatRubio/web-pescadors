@@ -2,6 +2,8 @@
  * Build-time content access. Each query runs once per build and is shared by all pages,
  * so the number of Sanity API requests doesn't grow with the number of pages.
  */
+
+import { isPastEvent } from '@pescadors/shared';
 import type {
   AlbumsQueryResult,
   ClubPageQueryResult,
@@ -59,7 +61,7 @@ export const getClubPage = () =>
 
 /** Splits events into upcoming (soonest first) and past (most recent first). */
 export function splitEvents(events: ClubEvent[], now = new Date()) {
-  const isPast = (e: ClubEvent) => new Date(e.end ?? e.start ?? 0) < now;
+  const isPast = (e: ClubEvent) => isPastEvent(e, now);
   return {
     upcoming: events.filter((e) => !isPast(e)),
     past: events.filter(isPast).reverse(),

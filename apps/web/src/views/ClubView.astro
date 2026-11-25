@@ -16,7 +16,7 @@ const l = localizer(locale);
 const page = await getClubPage();
 ---
 
-<HullBand text={l(page?.title) ?? pageTitles.club[locale]} />
+<HullBand text={l(page?.title) ?? pageTitles.club[locale]} lang={l.lang(page?.title)} />
 <div class="wrap py-xl">
   {page?.image && <Picture image={page.image} alt={l(page.image.alt) ?? ''} ratio={21 / 9} width={1600} eager />}
   {page?.body ? <RichText value={page.body} locale={locale} class="mt-lg" /> : <p>{t(locale, 'club.empty')}</p>}

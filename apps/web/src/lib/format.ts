@@ -1,6 +1,4 @@
-import { LOCALE_TAGS, type Locale } from '@pescadors/shared';
-
-const TIME_ZONE = 'Europe/Madrid';
+import { clubDay, LOCALE_TAGS, type Locale, CLUB_TIME_ZONE as TIME_ZONE } from '@pescadors/shared';
 
 /** "dissabte, 14 de març de 2026" style dates, for prose. */
 export function longDate(iso: string | null | undefined, locale: Locale): string {
@@ -37,5 +35,11 @@ export function timeOfDay(iso: string | null | undefined, locale: Locale): strin
 
 /** Today's date (YYYY-MM-DD) in the club's time zone, for build-time filters. */
 export function todayIso(): string {
-  return new Intl.DateTimeFormat('en-CA', { timeZone: TIME_ZONE }).format(new Date());
+  return clubDay(new Date());
+}
+
+/** Value for a `<time datetime>` attribute: the day for all-day dates, else the instant. */
+export function machineDate(iso: string | null | undefined): string | undefined {
+  if (!iso) return undefined;
+  return iso.length <= 10 ? iso : new Date(iso).toISOString();
 }

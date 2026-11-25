@@ -12,7 +12,7 @@ import {
   sortedRows,
   splitEvents,
 } from '../lib/content';
-import { longDate, shortDate } from '../lib/format';
+import { longDate, machineDate, shortDate } from '../lib/format';
 import { localizer } from '../lib/i18n';
 
 interface Props {
@@ -65,8 +65,8 @@ const heroFocus = hotspot
     </div>
   </div>
   <div class="wrap py-lg">
-    <h1 id="home-title" class="headline-lg max-w-[24ch]">{heroTitle}</h1>
-    {l(home?.intro) && <p class="mt-md max-w-(--spacing-measure) text-body-lg">{l(home?.intro)}</p>}
+    <h1 id="home-title" class="headline-lg max-w-[24ch]" lang={l.lang(home?.heroTitle)}>{heroTitle}</h1>
+    {l(home?.intro) && <p class="mt-md max-w-(--spacing-measure) text-body-lg" lang={l.lang(home?.intro)}>{l(home?.intro)}</p>}
   </div>
 </section>
 
@@ -76,9 +76,9 @@ const heroFocus = hotspot
     {
       next ? (
         <article class="mt-sm">
-          <p class="font-bold text-primary-ink">{longDate(next.start, locale)}</p>
+          <p class="font-bold text-primary-ink"><time datetime={machineDate(next.start)}>{longDate(next.start, locale)}</time></p>
           <h3 class="headline-lg mt-sm">
-            <a class="text-on-surface" href={localizedPath('calendar', locale, next.slug)}>
+            <a class="text-on-surface" href={localizedPath('calendar', locale, next.slug)} lang={l.lang(next.title)}>
               {l(next.title)}
             </a>
           </h3>
@@ -96,7 +96,7 @@ const heroFocus = hotspot
               </>
             )}
           </dl>
-          {l(next.summary) && <p class="mt-md max-w-(--spacing-measure)">{l(next.summary)}</p>}
+          {l(next.summary) && <p class="mt-md max-w-(--spacing-measure)" lang={l.lang(next.summary)}>{l(next.summary)}</p>}
         </article>
       ) : (
         <p class="mt-sm">
@@ -114,11 +114,11 @@ const heroFocus = hotspot
       latestResult?.event ? (
         <>
           <h3 class="headline-md mt-sm">
-            <a class="text-on-surface" href={localizedPath('results', locale, latestResult.event.slug ?? '')}>
+            <a class="text-on-surface" href={localizedPath('results', locale, latestResult.event.slug ?? '')} lang={l.lang(latestResult.event.title)}>
               {l(latestResult.event.title)}
             </a>
           </h3>
-          <p class="meta">{shortDate(latestResult.event.start, locale)}</p>
+          <p class="meta"><time datetime={machineDate(latestResult.event.start)}>{shortDate(latestResult.event.start, locale)}</time></p>
           <ol class="mt-md divide-y divide-neutral border-y border-neutral">
             {podium.slice(0, 5).map((row) => (
               <li class="flex items-baseline gap-md py-sm">
@@ -135,7 +135,7 @@ const heroFocus = hotspot
         <p class="mt-sm">{t(locale, 'results.empty')}</p>
       )
     }
-    <p class="mt-md"><a href={localizedPath('results', locale)}>{t(locale, 'all.results')}</a></p>
+    {latestResult && <p class="mt-md"><a href={localizedPath('results', locale)}>{t(locale, 'all.results')}</a></p>}
   </section>
 </div>
 
@@ -146,11 +146,11 @@ const heroFocus = hotspot
       <div class="mt-md grid gap-xl md:grid-cols-12">
         <article class="md:col-span-7">
           <a href={localizedPath('news', locale, leadPost.slug)} class="group text-on-surface no-underline">
-            {leadPost.cover && <Picture image={leadPost.cover} alt={l(leadPost.cover.alt) ?? ''} ratio={3 / 2} width={960} sizes="(min-width: 48rem) 58vw, 100vw" />}
-            <h3 class="headline-lg mt-md group-hover:text-primary-ink group-hover:underline">{l(leadPost.title)}</h3>
+            {leadPost.cover && <Picture image={leadPost.cover} alt="" ratio={3 / 2} width={960} sizes="(min-width: 48rem) 58vw, 100vw" />}
+            <h3 class="headline-lg mt-md group-hover:text-primary-ink group-hover:underline" lang={l.lang(leadPost.title)}>{l(leadPost.title)}</h3>
           </a>
-          <p class="meta mt-xs">{longDate(leadPost.publishedAt, locale)}</p>
-          {l(leadPost.excerpt) && <p class="mt-sm max-w-(--spacing-measure)">{l(leadPost.excerpt)}</p>}
+          <p class="meta mt-xs"><time datetime={machineDate(leadPost.publishedAt)}>{longDate(leadPost.publishedAt, locale)}</time></p>
+          {l(leadPost.excerpt) && <p class="mt-sm max-w-(--spacing-measure)" lang={l.lang(leadPost.excerpt)}>{l(leadPost.excerpt)}</p>}
         </article>
         <div class="flex flex-col gap-lg md:col-span-5">
           {morePosts.map((post) => (
@@ -158,8 +158,8 @@ const heroFocus = hotspot
               <a href={localizedPath('news', locale, post.slug)} class="group grid grid-cols-[8rem_1fr] gap-md text-on-surface no-underline">
                 {post.cover ? <Picture image={post.cover} alt="" ratio={1} width={256} sizes="8rem" /> : <span class="aspect-square bg-neutral" />}
                 <span>
-                  <span class="headline-md block group-hover:text-primary-ink group-hover:underline">{l(post.title)}</span>
-                  <span class="meta mt-xs block">{longDate(post.publishedAt, locale)}</span>
+                  <span class="headline-md block group-hover:text-primary-ink group-hover:underline" lang={l.lang(post.title)}>{l(post.title)}</span>
+                  <time class="meta mt-xs block" datetime={machineDate(post.publishedAt)}>{longDate(post.publishedAt, locale)}</time>
                 </span>
               </a>
             </article>
@@ -180,9 +180,9 @@ const heroFocus = hotspot
       </div>
       <a href={localizedPath('gallery', locale, album.slug)} class="mt-md grid grid-cols-2 md:grid-cols-4">
         {album.images?.slice(0, 4).map((img) => (
-          <Picture image={img} alt={l(img.alt) ?? ''} ratio={1} width={600} sizes="(min-width: 48rem) 25vw, 50vw" />
+          <Picture image={img} alt="" ratio={1} width={600} sizes="(min-width: 48rem) 25vw, 50vw" />
         ))}
-        <span class="sr-only">{l(album.title)}</span>
+        <span class="sr-only" lang={l.lang(album.title)}>{l(album.title)}</span>
       </a>
     </section>
   )

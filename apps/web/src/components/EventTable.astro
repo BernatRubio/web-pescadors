@@ -3,7 +3,7 @@
 import { type Locale, localizedPath } from '@pescadors/shared';
 import { t } from '../i18n/ui';
 import type { ClubEvent } from '../lib/content';
-import { shortDate, timeOfDay } from '../lib/format';
+import { machineDate, shortDate, timeOfDay } from '../lib/format';
 import { localizer } from '../lib/i18n';
 
 interface Props {
@@ -30,11 +30,11 @@ const l = localizer(locale);
       events.map((e) => (
         <tr class="align-baseline">
           <td class="px-sm py-sm whitespace-nowrap">
-            <span class="race-number">{shortDate(e.start, locale)}</span>
+            <time class="race-number" datetime={machineDate(e.start)}>{shortDate(e.start, locale)}</time>
             {timeOfDay(e.start, locale) && <span class="meta block">{timeOfDay(e.start, locale)}</span>}
           </td>
           <td class="px-sm py-sm">
-            <a class="font-bold text-on-surface" href={localizedPath('calendar', locale, e.slug)}>
+            <a class="font-bold text-on-surface" href={localizedPath('calendar', locale, e.slug)} lang={l.lang(e.title)}>
               {l(e.title)}
             </a>
             {e.location?.name && <span class="meta block">{e.location.name}</span>}

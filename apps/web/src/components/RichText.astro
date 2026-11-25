@@ -1,6 +1,12 @@
 ---
 /** Renders a localised Portable Text field (internationalizedArrayRichText). */
-import { type Locale, type LocalizedValue, pickLocale } from '@pescadors/shared';
+import {
+  LOCALE_TAGS,
+  type Locale,
+  type LocalizedValue,
+  pickLocale,
+  pickLocaleWithLang,
+} from '@pescadors/shared';
 import { PortableText } from 'astro-portabletext';
 import Figure from './portable/Figure.astro';
 import Link from './portable/Link.astro';
@@ -14,9 +20,13 @@ interface Props {
 const { value, locale, class: className } = Astro.props;
 type Block = { _type: string; _key: string; alt?: unknown; caption?: unknown };
 
+const picked = pickLocaleWithLang(value as LocalizedValue<Block[]>, locale);
+// A Catalan fallback on an es/en page is marked up as Catalan (WCAG 3.1.2).
+const lang = picked && picked.lang !== locale ? LOCALE_TAGS[picked.lang] : undefined;
+
 // Resolve the figures' translatable alt text and caption up front, so the
 // Portable Text components don't need to know the locale.
-const blocks = (pickLocale(value as LocalizedValue<Block[]>, locale) ?? []).map((block) =>
+const blocks = (picked?.value ?? []).map((block) =>
   block._type === 'figure'
     ? {
         ...block,
@@ -29,7 +39,7 @@ const blocks = (pickLocale(value as LocalizedValue<Block[]>, locale) ?? []).map(
 
 {
   blocks.length > 0 && (
-    <div class:list={['rich-text', className]}>
+    <div class:list={['rich-text', className]} lang={lang}>
       <PortableText value={blocks} components={{ type: { figure: Figure }, mark: { link: Link } }} />
     </div>
   )

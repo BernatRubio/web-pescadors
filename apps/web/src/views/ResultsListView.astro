@@ -1,9 +1,9 @@
 ---
 import { type Locale, localizedPath } from '@pescadors/shared';
 import HullBand from '../components/HullBand.astro';
-import { pageTitles, t } from '../i18n/ui';
+import { pageTitles, t, tn } from '../i18n/ui';
 import { getResults } from '../lib/content';
-import { shortDate } from '../lib/format';
+import { machineDate, shortDate } from '../lib/format';
 import { localizer } from '../lib/i18n';
 
 interface Props {
@@ -22,12 +22,13 @@ const results = (await getResults()).filter((r) => r.event?.slug);
       <p>{t(locale, 'results.empty')}</p>
     ) : (
       <table class="w-full border-collapse text-left">
+        <caption class="sr-only">{pageTitles.results[locale]}</caption>
         <thead class="bg-secondary text-on-secondary">
           <tr>
             <th scope="col" class="px-sm py-xs text-label-md font-semibold">{t(locale, 'calendar.when')}</th>
-            <th scope="col" class="px-sm py-xs text-label-md font-semibold">{t(locale, 'calendar.event')}</th>
+            <th scope="col" class="px-sm py-xs text-label-md font-semibold">{t(locale, 'results.event')}</th>
             <th scope="col" class="px-sm py-xs text-right text-label-md font-semibold">
-              <span class="sr-only">{t(locale, 'results.podiums', { n: '' })}</span>
+              <span class="sr-only">{t(locale, 'results.summary')}</span>
             </th>
           </tr>
         </thead>
@@ -36,15 +37,15 @@ const results = (await getResults()).filter((r) => r.event?.slug);
             const podiums = (r.rows ?? []).filter((row) => (row.position ?? 99) <= 3).length;
             return (
               <tr class="align-baseline">
-                <td class="race-number px-sm py-sm whitespace-nowrap">{shortDate(r.event?.start, locale)}</td>
+                <td class="race-number px-sm py-sm whitespace-nowrap"><time datetime={machineDate(r.event?.start)}>{shortDate(r.event?.start, locale)}</time></td>
                 <td class="px-sm py-sm">
-                  <a class="font-bold text-on-surface" href={localizedPath('results', locale, r.event?.slug ?? '')}>
+                  <a class="font-bold text-on-surface" href={localizedPath('results', locale, r.event?.slug ?? '')} lang={l.lang(r.event?.title)}>
                     {l(r.event?.title)}
                   </a>
                   {r.event?.location?.name && <span class="meta block">{r.event.location.name}</span>}
                 </td>
                 <td class="meta px-sm py-sm text-right whitespace-nowrap">
-                  {podiums > 0 ? t(locale, 'results.podiums', { n: podiums }) : t(locale, 'results.count', { n: r.rows?.length ?? 0 })}
+                  {podiums > 0 ? tn(locale, 'results.podiums', podiums) : tn(locale, 'results.count', r.rows?.length ?? 0)}
                 </td>
               </tr>
             );

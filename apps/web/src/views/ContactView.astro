@@ -35,7 +35,7 @@ const hasAny = settings?.email || settings?.phone || settings?.address;
             <dt class="meta">{t(locale, 'contact.address')}</dt>
             <dd>
               <p class="whitespace-pre-line text-body-lg">{settings.address}</p>
-              {settings.mapUrl && <a href={settings.mapUrl} rel="noopener">{t(locale, 'contact.map')}</a>}
+              {settings.mapUrl && <a href={settings.mapUrl} rel="noopener">{t(locale, 'map.open')}</a>}
             </dd>
           </>
         )}

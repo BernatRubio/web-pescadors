@@ -1,4 +1,4 @@
-import type { Locale, RouteKey } from '@pescadors/shared';
+import { LOCALE_TAGS, type Locale, type RouteKey } from '@pescadors/shared';
 
 /**
  * Fixed interface text. Content written by editors lives in Sanity, not here.
@@ -29,9 +29,10 @@ export const ui = {
     'news.relatedEvent': 'Regata relacionada',
     'news.relatedAlbum': 'Fotos d’aquest dia',
     'calendar.upcoming': 'Pròximes',
-    'calendar.past': 'Ja disputades',
+    'calendar.past': 'Anteriors',
     'calendar.empty': 'No hi ha regates programades ara mateix. Mira els últims resultats.',
-    'calendar.event': 'Regata',
+    'calendar.event': 'Esdeveniment',
+    'results.event': 'Regata',
     'calendar.when': 'Quan',
     'calendar.where': 'On',
     'calendar.competition': 'Competició',
@@ -40,22 +41,20 @@ export const ui = {
     'calendar.programme': 'Programa',
     'calendar.courseMap': 'Recorregut',
     'calendar.clubs': 'Clubs participants',
-    'calendar.map': 'Veure el mapa',
+    'map.open': 'Veure el mapa',
     'results.empty': 'Encara no hi ha resultats publicats.',
     'results.position': 'Posició',
     'results.category': 'Categoria',
     'results.boat': 'Embarcació',
     'results.crew': 'Tripulació',
     'results.time': 'Temps',
-    'results.count': '{n} resultats',
     'results.official': 'Resultats oficials',
     'results.officialPdf': 'Resultats oficials (PDF)',
-    'results.podiums': '{n} podis',
+    'results.summary': 'Resum',
     'gallery.empty': 'Encara no hi ha galeries.',
-    'gallery.photos': '{n} fotos',
     'gallery.videos': 'Vídeos',
     'gallery.play': 'Reprodueix el vídeo',
-    'gallery.playNote': 'S’obrirà YouTube.',
+    'gallery.playNote': 'Es carregarà des de YouTube.',
     'lightbox.close': 'Tanca',
     'lightbox.prev': 'Foto anterior',
     'lightbox.next': 'Foto següent',
@@ -69,11 +68,13 @@ export const ui = {
     'contact.email': 'Correu',
     'contact.phone': 'Telèfon',
     'contact.address': 'On som',
-    'contact.map': 'Veure al mapa',
     'contact.social': 'Xarxes socials',
     'contact.empty': 'Aviat hi trobaràs les dades de contacte.',
     'club.empty': 'Aviat hi trobaràs la història del club.',
     'footer.sponsors': 'Amb el suport de',
+    'notFound.title': 'No hem trobat aquesta pàgina',
+    'notFound.text': 'Potser l’adreça ha canviat o hi ha un error d’escriptura.',
+    'notFound.home': 'Torna a l’inici',
   },
   es: {
     'site.name': 'Club Rem Pescadors',
@@ -98,9 +99,10 @@ export const ui = {
     'news.relatedEvent': 'Regata relacionada',
     'news.relatedAlbum': 'Fotos de este día',
     'calendar.upcoming': 'Próximas',
-    'calendar.past': 'Ya disputadas',
+    'calendar.past': 'Anteriores',
     'calendar.empty': 'No hay regatas programadas ahora mismo. Mira los últimos resultados.',
-    'calendar.event': 'Regata',
+    'calendar.event': 'Evento',
+    'results.event': 'Regata',
     'calendar.when': 'Cuándo',
     'calendar.where': 'Dónde',
     'calendar.competition': 'Competición',
@@ -109,22 +111,20 @@ export const ui = {
     'calendar.programme': 'Programa',
     'calendar.courseMap': 'Recorrido',
     'calendar.clubs': 'Clubes participantes',
-    'calendar.map': 'Ver el mapa',
+    'map.open': 'Ver el mapa',
     'results.empty': 'Todavía no hay resultados publicados.',
     'results.position': 'Posición',
     'results.category': 'Categoría',
     'results.boat': 'Embarcación',
     'results.crew': 'Tripulación',
     'results.time': 'Tiempo',
-    'results.count': '{n} resultados',
     'results.official': 'Resultados oficiales',
     'results.officialPdf': 'Resultados oficiales (PDF)',
-    'results.podiums': '{n} podios',
+    'results.summary': 'Resumen',
     'gallery.empty': 'Todavía no hay galerías.',
-    'gallery.photos': '{n} fotos',
     'gallery.videos': 'Vídeos',
     'gallery.play': 'Reproducir el vídeo',
-    'gallery.playNote': 'Se abrirá YouTube.',
+    'gallery.playNote': 'Se cargará desde YouTube.',
     'lightbox.close': 'Cerrar',
     'lightbox.prev': 'Foto anterior',
     'lightbox.next': 'Foto siguiente',
@@ -138,11 +138,13 @@ export const ui = {
     'contact.email': 'Correo',
     'contact.phone': 'Teléfono',
     'contact.address': 'Dónde estamos',
-    'contact.map': 'Ver en el mapa',
     'contact.social': 'Redes sociales',
     'contact.empty': 'Pronto encontrarás aquí los datos de contacto.',
     'club.empty': 'Pronto encontrarás aquí la historia del club.',
     'footer.sponsors': 'Con el apoyo de',
+    'notFound.title': 'No hemos encontrado esta página',
+    'notFound.text': 'Quizá la dirección ha cambiado o hay un error al escribirla.',
+    'notFound.home': 'Volver al inicio',
   },
   en: {
     'site.name': 'Club Rem Pescadors',
@@ -167,9 +169,10 @@ export const ui = {
     'news.relatedEvent': 'Related regatta',
     'news.relatedAlbum': 'Photos from the day',
     'calendar.upcoming': 'Upcoming',
-    'calendar.past': 'Already raced',
+    'calendar.past': 'Past',
     'calendar.empty': 'No regattas are scheduled right now. Have a look at the latest results.',
-    'calendar.event': 'Regatta',
+    'calendar.event': 'Event',
+    'results.event': 'Regatta',
     'calendar.when': 'When',
     'calendar.where': 'Where',
     'calendar.competition': 'Competition',
@@ -178,22 +181,20 @@ export const ui = {
     'calendar.programme': 'Programme',
     'calendar.courseMap': 'Course',
     'calendar.clubs': 'Participating clubs',
-    'calendar.map': 'Open the map',
+    'map.open': 'Open the map',
     'results.empty': 'No results published yet.',
     'results.position': 'Position',
     'results.category': 'Category',
     'results.boat': 'Boat',
     'results.crew': 'Crew',
     'results.time': 'Time',
-    'results.count': '{n} results',
     'results.official': 'Official results',
     'results.officialPdf': 'Official results (PDF)',
-    'results.podiums': '{n} podiums',
+    'results.summary': 'Summary',
     'gallery.empty': 'No galleries yet.',
-    'gallery.photos': '{n} photos',
     'gallery.videos': 'Videos',
     'gallery.play': 'Play the video',
-    'gallery.playNote': 'This opens YouTube.',
+    'gallery.playNote': 'It loads from YouTube.',
     'lightbox.close': 'Close',
     'lightbox.prev': 'Previous photo',
     'lightbox.next': 'Next photo',
@@ -207,15 +208,38 @@ export const ui = {
     'contact.email': 'Email',
     'contact.phone': 'Phone',
     'contact.address': 'Where we are',
-    'contact.map': 'Open the map',
     'contact.social': 'Social media',
     'contact.empty': 'Contact details will appear here soon.',
     'club.empty': 'The club’s story will appear here soon.',
     'footer.sponsors': 'Supported by',
+    'notFound.title': 'We couldn’t find this page',
+    'notFound.text': 'The address may have changed or been mistyped.',
+    'notFound.home': 'Back to the home page',
   },
 } as const satisfies Record<Locale, Record<string, string>>;
 
 export type UiKey = keyof (typeof ui)['ca'];
+
+/** Counted text, picked with `Intl.PluralRules` by `tn()`. */
+export const plurals = {
+  ca: {
+    'results.count': { one: '{n} resultat', other: '{n} resultats' },
+    'results.podiums': { one: '{n} podi', other: '{n} podis' },
+    'gallery.photos': { one: '{n} foto', other: '{n} fotos' },
+  },
+  es: {
+    'results.count': { one: '{n} resultado', other: '{n} resultados' },
+    'results.podiums': { one: '{n} podio', other: '{n} podios' },
+    'gallery.photos': { one: '{n} foto', other: '{n} fotos' },
+  },
+  en: {
+    'results.count': { one: '{n} result', other: '{n} results' },
+    'results.podiums': { one: '{n} podium', other: '{n} podiums' },
+    'gallery.photos': { one: '{n} photo', other: '{n} photos' },
+  },
+} as const satisfies Record<Locale, Record<string, { one: string; other: string }>>;
+
+export type PluralKey = keyof (typeof plurals)['ca'];
 
 export const pageTitles: Record<RouteKey, Record<Locale, string>> = {
   home: { ca: 'Inici', es: 'Inicio', en: 'Home' },
@@ -237,6 +261,50 @@ export const pageTitles: Record<RouteKey, Record<Locale, string>> = {
     ca: "Declaració d'accessibilitat",
     es: 'Declaración de accesibilidad',
     en: 'Accessibility statement',
+  },
+};
+
+/** Meta descriptions for section pages (search results and link previews). */
+export const pageDescriptions: Partial<Record<RouteKey, Record<Locale, string>>> = {
+  home: {
+    ca: 'Club de rem de banc fix a Lloret de Mar: llagut català, batel i llagut mediterrani.',
+    es: 'Club de remo de banco fijo en Lloret de Mar: llagut català, batel y llagut mediterrani.',
+    en: 'Fixed-seat sea-rowing club in Lloret de Mar: llagut català, batel and llagut mediterrani.',
+  },
+  club: {
+    ca: 'La història i la gent del Club Rem Pescadors de Lloret de Mar.',
+    es: 'La historia y la gente del Club Rem Pescadors de Lloret de Mar.',
+    en: 'The story and the people of Club Rem Pescadors in Lloret de Mar.',
+  },
+  calendar: {
+    ca: 'Regates i activitats del Club Rem Pescadors: dates, llocs i competicions.',
+    es: 'Regatas y actividades del Club Rem Pescadors: fechas, lugares y competiciones.',
+    en: 'Club Rem Pescadors regattas and activities: dates, places and competitions.',
+  },
+  results: {
+    ca: 'Resultats de les tripulacions del Club Rem Pescadors a cada regata.',
+    es: 'Resultados de las tripulaciones del Club Rem Pescadors en cada regata.',
+    en: 'How Club Rem Pescadors crews placed at each regatta.',
+  },
+  news: {
+    ca: 'Notícies del Club Rem Pescadors de Lloret de Mar.',
+    es: 'Noticias del Club Rem Pescadors de Lloret de Mar.',
+    en: 'News from Club Rem Pescadors in Lloret de Mar.',
+  },
+  gallery: {
+    ca: 'Fotos i vídeos de regates i entrenaments del Club Rem Pescadors.',
+    es: 'Fotos y vídeos de regatas y entrenamientos del Club Rem Pescadors.',
+    en: 'Photos and videos of Club Rem Pescadors regattas and training.',
+  },
+  sponsors: {
+    ca: 'Les empreses i institucions que donen suport al Club Rem Pescadors.',
+    es: 'Las empresas e instituciones que apoyan al Club Rem Pescadors.',
+    en: 'The companies and institutions that support Club Rem Pescadors.',
+  },
+  contact: {
+    ca: 'Com contactar amb el Club Rem Pescadors de Lloret de Mar.',
+    es: 'Cómo contactar con el Club Rem Pescadors de Lloret de Mar.',
+    en: 'How to get in touch with Club Rem Pescadors in Lloret de Mar.',
   },
 };
 
@@ -269,4 +337,10 @@ export function t(locale: Locale, key: UiKey, vars?: Record<string, string | num
     text = text.replace(`{${name}}`, String(value));
   }
   return text;
+}
+
+/** Counted text with the right plural form: `tn('ca', 'gallery.photos', 1)` → "1 foto". */
+export function tn(locale: Locale, key: PluralKey, n: number): string {
+  const form = new Intl.PluralRules(LOCALE_TAGS[locale]).select(n) === 'one' ? 'one' : 'other';
+  return plurals[locale][key][form].replace('{n}', String(n));
 }

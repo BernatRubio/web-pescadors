@@ -4,7 +4,7 @@ import HullBand from '../components/HullBand.astro';
 import Picture from '../components/Picture.astro';
 import { pageTitles, t } from '../i18n/ui';
 import { getPosts } from '../lib/content';
-import { longDate } from '../lib/format';
+import { longDate, machineDate } from '../lib/format';
 import { localizer } from '../lib/i18n';
 
 interface Props {
@@ -30,13 +30,13 @@ const posts = await getPosts();
                 {post.cover && <Picture image={post.cover} alt="" ratio={3 / 2} width={640} sizes="(min-width: 48rem) 33vw, 100vw" />}
               </div>
               <div class="md:col-span-8">
-                <p class="meta">{longDate(post.publishedAt, locale)}</p>
+                <p class="meta"><time datetime={machineDate(post.publishedAt)}>{longDate(post.publishedAt, locale)}</time></p>
                 <h2 class="headline-md mt-xs">
-                  <a class="text-on-surface" href={localizedPath('news', locale, post.slug)}>
+                  <a class="text-on-surface" href={localizedPath('news', locale, post.slug)} lang={l.lang(post.title)}>
                     {l(post.title)}
                   </a>
                 </h2>
-                {l(post.excerpt) && <p class="mt-sm max-w-(--spacing-measure)">{l(post.excerpt)}</p>}
+                {l(post.excerpt) && <p class="mt-sm max-w-(--spacing-measure)" lang={l.lang(post.excerpt)}>{l(post.excerpt)}</p>}
               </div>
             </article>
           </li>

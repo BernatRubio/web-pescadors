@@ -40,6 +40,13 @@ export function responsiveImage(
   };
 }
 
+/** Display width for an image shown `height` px tall, from its stored proportions. */
+export function widthAtHeight(source: unknown, height: number): number | undefined {
+  const ratio = (source as { asset?: { metadata?: { dimensions?: { aspectRatio?: number } } } })
+    ?.asset?.metadata?.dimensions?.aspectRatio;
+  return ratio ? Math.round(height * ratio) : undefined;
+}
+
 /** A single URL, e.g. for logos or Open Graph images. */
 export function imageUrl(source: unknown, width: number): string | null {
   if (!source || !isImageWithAsset(source as ImageLike)) return null;

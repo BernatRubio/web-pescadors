@@ -78,6 +78,12 @@ export type Figure = {
   caption?: InternationalizedArrayString;
 };
 
+export type Slug = {
+  _type: "slug";
+  current?: string;
+  source?: string;
+};
+
 export type SanityFileAssetReference = {
   _ref: string;
   _type: "reference";
@@ -445,12 +451,6 @@ export type Season = {
   endDate?: string;
 };
 
-export type Slug = {
-  _type: "slug";
-  current?: string;
-  source?: string;
-};
-
 export type PostReference = {
   _ref: string;
   _type: "reference";
@@ -662,6 +662,7 @@ export type AllSanitySchemaTypes =
   | InternationalizedArrayRichText
   | SanityImageAssetReference
   | Figure
+  | Slug
   | SanityFileAssetReference
   | ClubDocument
   | Course
@@ -689,7 +690,6 @@ export type AllSanitySchemaTypes =
   | Event
   | Competition
   | Season
-  | Slug
   | PostReference
   | HomePage
   | SiteSettings
@@ -758,7 +758,7 @@ export type HomeQueryResult = {
 
 // Source: ../web/src/lib/sanity/queries.ts
 // Variable: postsQuery
-// Query: *[_type == "post" && defined(slug.current)] | order(publishedAt desc){  _id, title, "slug": slug.current, publishedAt, excerpt, body,  cover{..., asset->{_id, metadata{lqip, dimensions}}},  "event": event->{title, "slug": slug.current},  "album": album->{title, "slug": slug.current}}
+// Query: *[_type == "post" && defined(slug.current) && publishedAt <= now()] | order(publishedAt desc){  _id, title, "slug": slug.current, publishedAt, excerpt, body,  cover{..., asset->{_id, metadata{lqip, dimensions}}},  "event": event->{title, "slug": slug.current},  "album": album->{title, "slug": slug.current}}
 export type PostsQueryResult = Array<{
   _id: string;
   title: InternationalizedArrayString | null;
@@ -930,14 +930,19 @@ export type AlbumsQueryResult = Array<{
 
 // Source: ../web/src/lib/sanity/queries.ts
 // Variable: sponsorsQuery
-// Query: *[_type == "sponsor"  && (!defined(activeFrom) || activeFrom <= $today)  && (!defined(activeTo) || activeTo >= $today)] | order(order asc, name asc){  _id, name, url, tier, logo}
+// Query: *[_type == "sponsor"  && (!defined(activeFrom) || activeFrom <= $today)  && (!defined(activeTo) || activeTo >= $today)] | order(order asc, name asc){  _id, name, url, tier,  logo{..., asset->{_id, metadata{dimensions}}}}
 export type SponsorsQueryResult = Array<{
   _id: string;
   name: string | null;
   url: string | null;
   tier: "collaborador" | "institucional" | "principal" | null;
   logo: {
-    asset?: SanityImageAssetReference;
+    asset: {
+      _id: string;
+      metadata: {
+        dimensions: SanityImageDimensions | null;
+      } | null;
+    } | null;
     media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
@@ -973,11 +978,11 @@ declare global {
   interface SanityQueries {
     '*[_type == "siteSettings" && _id == "siteSettings"][0]{\n  clubName, tagline, logo, email, phone, address, mapUrl, social\n}': SettingsQueryResult;
     '*[_type == "homePage" && _id == "homePage"][0]{\n  heroTitle, heroBand, intro,\n  heroImage{..., asset->{_id, metadata{lqip, dimensions}}}\n}': HomeQueryResult;
-    '*[_type == "post" && defined(slug.current)] | order(publishedAt desc){\n  _id, title, "slug": slug.current, publishedAt, excerpt, body,\n  cover{..., asset->{_id, metadata{lqip, dimensions}}},\n  "event": event->{title, "slug": slug.current},\n  "album": album->{title, "slug": slug.current}\n}': PostsQueryResult;
+    '*[_type == "post" && defined(slug.current) && publishedAt <= now()] | order(publishedAt desc){\n  _id, title, "slug": slug.current, publishedAt, excerpt, body,\n  cover{..., asset->{_id, metadata{lqip, dimensions}}},\n  "event": event->{title, "slug": slug.current},\n  "album": album->{title, "slug": slug.current}\n}': PostsQueryResult;
     '*[_type == "event" && defined(slug.current)] | order(start asc){\n  _id, title, "slug": slug.current, kind, start, end, location, summary, body,\n  registrationUrl, organisedByClub, programme, participatingClubs,\n  poster{..., asset->{_id, metadata{lqip, dimensions}}},\n  courseMap{..., asset->{_id, metadata{lqip, dimensions}}},\n  "season": season->title,\n  "competition": competition->name,\n  "hasResults": count(*[_type == "result" && event._ref == ^._id]) > 0\n}': EventsQueryResult;
     '*[_type == "result" && defined(event->slug.current)] | order(event->start desc){\n  _id,\n  "event": event->{title, "slug": slug.current, start, location, "season": season->title, "competition": competition->name},\n  rows[]{\n    _key, position, time, crew, notes,\n    "category": category->{name, ageGroup, crew, order},\n    "boatClass": boatClass->{name, order}\n  },\n  officialUrl,\n  "officialFileUrl": officialFile.asset->url\n}': ResultsQueryResult;
     '*[_type == "album" && defined(slug.current)] | order(date desc){\n  _id, title, "slug": slug.current, date,\n  "event": event->{title, "slug": slug.current},\n  images[]{..., asset->{_id, metadata{lqip, dimensions}}},\n  videos[]{_key, url, title}\n}': AlbumsQueryResult;
-    '*[_type == "sponsor"\n  && (!defined(activeFrom) || activeFrom <= $today)\n  && (!defined(activeTo) || activeTo >= $today)] | order(order asc, name asc){\n  _id, name, url, tier, logo\n}': SponsorsQueryResult;
+    '*[_type == "sponsor"\n  && (!defined(activeFrom) || activeFrom <= $today)\n  && (!defined(activeTo) || activeTo >= $today)] | order(order asc, name asc){\n  _id, name, url, tier,\n  logo{..., asset->{_id, metadata{dimensions}}}\n}': SponsorsQueryResult;
     '*[_type == "page" && slug.current == "el-club"][0]{\n  title, body,\n  image{..., asset->{_id, metadata{lqip, dimensions}}}\n}': ClubPageQueryResult;
   }
 }

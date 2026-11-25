@@ -2,7 +2,7 @@
 import { type Locale, localizedPath } from '@pescadors/shared';
 import { t } from '../i18n/ui';
 import { getSettings, getSponsors } from '../lib/content';
-import { imageUrl } from '../lib/sanity/image';
+import { imageUrl, widthAtHeight } from '../lib/sanity/image';
 
 interface Props {
   locale: Locale;
@@ -60,9 +60,12 @@ const socialLabel: Record<string, string> = {
           <ul class="mt-md flex flex-wrap items-center gap-lg">
             {[...main, ...others].map((s) => {
               const logo = imageUrl(s.logo, s.tier === 'principal' ? 320 : 200);
-              const size = s.tier === 'principal' ? 'h-14' : 'h-9';
+              const isMain = s.tier === 'principal';
+              const size = isMain ? 'h-14' : 'h-9';
+              // Rendered height minus the p-xs padding on both sides.
+              const px = isMain ? 56 - 8 : 36 - 8;
               const content = logo ? (
-                <img src={logo} alt={s.name ?? ''} class:list={[size, 'w-auto bg-surface p-xs']} loading="lazy" />
+                <img src={logo} alt={s.name ?? ''} width={widthAtHeight(s.logo, px)} height={px} class:list={[size, 'w-auto bg-surface p-xs']} loading="lazy" />
               ) : (
                 <span>{s.name}</span>
               );

@@ -18,7 +18,7 @@ export const homeQuery = defineQuery(`*[_type == "homePage" && _id == "homePage"
 }`);
 
 export const postsQuery =
-  defineQuery(`*[_type == "post" && defined(slug.current)] | order(publishedAt desc){
+  defineQuery(`*[_type == "post" && defined(slug.current) && publishedAt <= now()] | order(publishedAt desc){
   _id, title, "slug": slug.current, publishedAt, excerpt, body,
   cover{..., asset->{_id, metadata{lqip, dimensions}}},
   "event": event->{title, "slug": slug.current},
@@ -60,7 +60,8 @@ export const albumsQuery =
 export const sponsorsQuery = defineQuery(`*[_type == "sponsor"
   && (!defined(activeFrom) || activeFrom <= $today)
   && (!defined(activeTo) || activeTo >= $today)] | order(order asc, name asc){
-  _id, name, url, tier, logo
+  _id, name, url, tier,
+  logo{..., asset->{_id, metadata{dimensions}}}
 }`);
 
 export const clubPageQuery = defineQuery(`*[_type == "page" && slug.current == "el-club"][0]{

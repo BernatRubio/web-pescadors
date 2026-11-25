@@ -2,7 +2,7 @@
 import { type Locale, localizedPath } from '@pescadors/shared';
 import { pageTitles, t } from '../i18n/ui';
 import { type Result, sortedRows } from '../lib/content';
-import { longDate } from '../lib/format';
+import { longDate, machineDate } from '../lib/format';
 import { localizer } from '../lib/i18n';
 
 interface Props {
@@ -14,21 +14,23 @@ const { locale, result } = Astro.props;
 const l = localizer(locale);
 const rows = sortedRows(result);
 const event = result.event;
+const title = l(event?.title);
 ---
 
 <article class="wrap py-xl">
   <p class="meta"><a href={localizedPath('results', locale)}>{pageTitles.results[locale]}</a></p>
-  <h1 class="headline-lg mt-sm max-w-[28ch]">{l(event?.title)}</h1>
+  <h1 class="headline-lg mt-sm max-w-[28ch]" lang={l.lang(event?.title)}>{title}</h1>
   <p class="meta mt-sm">
-    {longDate(event?.start, locale)}{event?.location?.name && <span>, {event.location.name}</span>}
+    <time datetime={machineDate(event?.start)}>{longDate(event?.start, locale)}</time>{event?.location?.name && <span>, {event.location.name}</span>}
   </p>
 
   {
     rows.length === 0 ? (
       <p class="mt-lg">{t(locale, 'results.empty')}</p>
     ) : (
-      <div class="mt-lg overflow-x-auto">
+      <div class="mt-lg overflow-x-auto" tabindex="0" role="region" aria-labelledby="results-caption">
         <table class="w-full border-collapse text-left">
+          <caption id="results-caption" class="sr-only">{pageTitles.results[locale]}: {title}</caption>
           <thead class="bg-secondary text-on-secondary">
             <tr>
               <th scope="col" class="px-sm py-xs text-label-md font-semibold">{t(locale, 'results.position')}</th>
@@ -42,7 +44,12 @@ const event = result.event;
             {rows.map((row) => (
               <tr class="align-baseline">
                 <td class:list={['race-number px-sm py-sm', (row.position ?? 99) <= 3 && 'text-primary-ink']}>{row.position}</td>
-                <td class="px-sm py-sm font-semibold">{l(row.category?.name)}</td>
+                <td class="px-sm py-sm">
+                  <span class="font-semibold">{l(row.category?.name)}</span>
+                  {/* On phones the crew column is hidden, so the crew goes under the category. */}
+                  {row.crew && <span class="block whitespace-pre-line md:hidden">{row.crew}</span>}
+                  {l(row.notes) && <span class="meta block md:hidden">{l(row.notes)}</span>}
+                </td>
                 <td class="px-sm py-sm">{l(row.boatClass?.name)}</td>
                 <td class="hidden px-sm py-sm whitespace-pre-line md:table-cell">
                   {row.crew}

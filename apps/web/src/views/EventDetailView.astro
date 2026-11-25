@@ -4,7 +4,7 @@ import Picture from '../components/Picture.astro';
 import RichText from '../components/RichText.astro';
 import { pageTitles, t } from '../i18n/ui';
 import type { ClubEvent } from '../lib/content';
-import { longDate, timeOfDay } from '../lib/format';
+import { longDate, machineDate, timeOfDay } from '../lib/format';
 import { localizer } from '../lib/i18n';
 
 interface Props {
@@ -15,20 +15,26 @@ interface Props {
 const { locale, event } = Astro.props;
 const l = localizer(locale);
 const time = timeOfDay(event.start, locale);
+const action = event.hasResults
+  ? { href: localizedPath('results', locale, event.slug), label: t(locale, 'calendar.seeResults') }
+  : event.registrationUrl
+    ? { href: event.registrationUrl, label: t(locale, 'calendar.register'), external: true }
+    : null;
 ---
 
 <article class="wrap py-xl">
   <p class="meta"><a href={localizedPath('calendar', locale)}>{pageTitles.calendar[locale]}</a></p>
-  <h1 class="headline-lg mt-sm max-w-[28ch]">{l(event.title)}</h1>
+  <h1 class="headline-lg mt-sm max-w-[28ch]" lang={l.lang(event.title)}>{l(event.title)}</h1>
 
-  <div class="mt-lg grid gap-xl md:grid-cols-12">
+  <!-- Phones: facts, poster, then the rest. Desktop: poster in the right column. -->
+  <div class="mt-lg grid gap-x-xl gap-y-lg md:grid-cols-12 md:items-start">
     <div class="md:col-span-7">
       <dl class="grid grid-cols-[auto_1fr] gap-x-md gap-y-sm">
         <dt class="meta">{t(locale, 'calendar.when')}</dt>
         <dd>
-          <span class="font-bold">{longDate(event.start, locale)}</span>{time && <span>, {time}</span>}
+          <time class="font-bold" datetime={machineDate(event.start)}>{longDate(event.start, locale)}</time>{time && <span>, {time}</span>}
           {event.end && longDate(event.end, locale) !== longDate(event.start, locale) && (
-            <span class="block">– {longDate(event.end, locale)}</span>
+            <span class="block">– <time datetime={machineDate(event.end)}>{longDate(event.end, locale)}</time></span>
           )}
         </dd>
         {event.location?.name && (
@@ -37,7 +43,7 @@ const time = timeOfDay(event.start, locale);
             <dd>
               {event.location.name}
               {event.location.address && <span class="block">{event.location.address}</span>}
-              {event.location.mapUrl && <a class="block" href={event.location.mapUrl} rel="noopener">{t(locale, 'calendar.map')}</a>}
+              {event.location.mapUrl && <a class="block" href={event.location.mapUrl} rel="noopener">{t(locale, 'map.open')}</a>}
             </dd>
           </>
         )}
@@ -49,13 +55,23 @@ const time = timeOfDay(event.start, locale);
         )}
       </dl>
 
-      {l(event.summary) && <p class="mt-lg max-w-(--spacing-measure) text-body-lg">{l(event.summary)}</p>}
-      <RichText value={event.body} locale={locale} class="mt-md" />
+      {l(event.summary) && <p class="mt-lg max-w-(--spacing-measure) text-body-lg" lang={l.lang(event.summary)}>{l(event.summary)}</p>}
+    </div>
+    {
+      event.poster && (
+        <div class="md:col-span-5 md:col-start-8 md:row-span-2 md:row-start-1">
+          <Picture image={event.poster} alt={l(event.poster.alt) ?? ''} width={800} sizes="(min-width: 48rem) 40vw, 100vw" />
+        </div>
+      )
+    }
+    <div class="md:col-span-7">
+      <RichText value={event.body} locale={locale} />
 
-      <p class="mt-lg flex flex-wrap gap-md">
-        {event.hasResults && <a class="button-primary" href={localizedPath('results', locale, event.slug)}>{t(locale, 'calendar.seeResults')}</a>}
-        {!event.hasResults && event.registrationUrl && <a class="button-primary" href={event.registrationUrl} rel="noopener">{t(locale, 'calendar.register')}</a>}
-      </p>
+      {action && (
+        <p class="mt-lg">
+          <a class="button-primary" href={action.href} rel={action.external ? 'noopener' : undefined}>{action.label}</a>
+        </p>
+      )}
 
       {event.organisedByClub && (
         <div class="mt-xl space-y-lg border-t border-neutral pt-lg">
@@ -68,7 +84,7 @@ const time = timeOfDay(event.start, locale);
           {event.courseMap && (
             <section>
               <h2 class="headline-md">{t(locale, 'calendar.courseMap')}</h2>
-              <Picture image={event.courseMap} alt={l(event.courseMap.alt) ?? ''} width={1280} class="mt-sm" />
+              <Picture image={event.courseMap} alt={l(event.courseMap.alt) ?? ''} width={1280} sizes="(min-width: 48rem) 58vw, 100vw" class="mt-sm" />
             </section>
           )}
           {(event.participatingClubs?.length ?? 0) > 0 && (
@@ -82,12 +98,5 @@ const time = timeOfDay(event.start, locale);
         </div>
       )}
     </div>
-    {
-      event.poster && (
-        <div class="md:col-span-5">
-          <Picture image={event.poster} alt={l(event.poster.alt) ?? ''} width={800} sizes="(min-width: 48rem) 40vw, 100vw" />
-        </div>
-      )
-    }
   </div>
 </article>

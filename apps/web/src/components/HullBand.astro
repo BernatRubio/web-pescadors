@@ -11,13 +11,16 @@ interface Props {
   as?: 'h1' | 'p';
   /** Slide in once on load (home page only). */
   animate?: boolean;
+  /** Set when the text is a fallback in another language. */
+  lang?: string;
 }
 
-const { text, size = 'page', as: Tag = 'h1', animate = false } = Astro.props;
+const { text, size = 'page', as: Tag = 'h1', animate = false, lang } = Astro.props;
 ---
 
 <div class:list={['hull-band bg-primary text-on-primary', animate && 'hull-band--enter']}>
   <Tag
+    lang={lang}
     class:list={[
       'hull mx-auto max-w-(--spacing-max-width) px-md text-balance',
       size === 'hero'

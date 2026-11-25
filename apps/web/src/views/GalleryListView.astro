@@ -2,9 +2,9 @@
 import { type Locale, localizedPath } from '@pescadors/shared';
 import HullBand from '../components/HullBand.astro';
 import Picture from '../components/Picture.astro';
-import { pageTitles, t } from '../i18n/ui';
+import { pageTitles, t, tn } from '../i18n/ui';
 import { getAlbums } from '../lib/content';
-import { longDate } from '../lib/format';
+import { longDate, machineDate } from '../lib/format';
 import { localizer } from '../lib/i18n';
 
 interface Props {
@@ -35,11 +35,11 @@ const albums = await getAlbums();
                   sizes={i === 0 ? '100vw' : '(min-width: 48rem) 50vw, 100vw'}
                 />
               )}
-              <h2 class="headline-md mt-sm group-hover:text-primary-ink group-hover:underline">{l(album.title)}</h2>
+              <h2 class="headline-md mt-sm group-hover:text-primary-ink group-hover:underline" lang={l.lang(album.title)}>{l(album.title)}</h2>
             </a>
             <p class="meta">
-              {longDate(album.date, locale)}
-              <span class="block">{t(locale, 'gallery.photos', { n: album.images?.length ?? 0 })}</span>
+              <time datetime={machineDate(album.date)}>{longDate(album.date, locale)}</time>
+              <span class="block">{tn(locale, 'gallery.photos', album.images?.length ?? 0)}</span>
             </p>
           </li>
         ))}

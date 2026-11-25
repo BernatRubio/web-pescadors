@@ -3,7 +3,7 @@ import { type Locale, localizedPath } from '@pescadors/shared';
 import HullBand from '../components/HullBand.astro';
 import { pageTitles, t, type UiKey } from '../i18n/ui';
 import { getSponsors } from '../lib/content';
-import { imageUrl } from '../lib/sanity/image';
+import { imageUrl, widthAtHeight } from '../lib/sanity/image';
 
 interface Props {
   locale: Locale;
@@ -12,10 +12,10 @@ interface Props {
 const { locale } = Astro.props;
 const sponsors = await getSponsors();
 const tiers = [
-  { tier: 'principal', label: 'sponsors.principal', logoWidth: 480, size: 'h-24' },
-  { tier: 'collaborador', label: 'sponsors.collaborador', logoWidth: 320, size: 'h-16' },
-  { tier: 'institucional', label: 'sponsors.institucional', logoWidth: 320, size: 'h-16' },
-] as const satisfies { tier: string; label: UiKey; logoWidth: number; size: string }[];
+  { tier: 'principal', label: 'sponsors.principal', logoWidth: 480, size: 'h-24', px: 96 },
+  { tier: 'collaborador', label: 'sponsors.collaborador', logoWidth: 320, size: 'h-16', px: 64 },
+  { tier: 'institucional', label: 'sponsors.institucional', logoWidth: 320, size: 'h-16', px: 64 },
+] as const satisfies { tier: string; label: UiKey; logoWidth: number; size: string; px: number }[];
 ---
 
 <HullBand text={pageTitles.sponsors[locale]} />
@@ -25,7 +25,7 @@ const tiers = [
     sponsors.length === 0 ? (
       <p class="mt-lg">{t(locale, 'sponsors.empty')}</p>
     ) : (
-      tiers.map(({ tier, label, logoWidth, size }) => {
+      tiers.map(({ tier, label, logoWidth, size, px }) => {
         const list = sponsors.filter((s) => s.tier === tier);
         return (
           list.length > 0 && (
@@ -35,7 +35,7 @@ const tiers = [
                 {list.map((s) => {
                   const logo = imageUrl(s.logo, logoWidth);
                   const content = logo ? (
-                    <img src={logo} alt={s.name ?? ''} class:list={[size, 'w-auto']} loading="lazy" />
+                    <img src={logo} alt={s.name ?? ''} width={widthAtHeight(s.logo, px)} height={px} class:list={[size, 'w-auto']} loading="lazy" />
                   ) : (
                     <span class="headline-md">{s.name}</span>
                   );
