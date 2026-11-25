@@ -1,0 +1,184 @@
+/*
+ * Global styles. Design tokens live in DESIGN.md (repo root) and are generated into
+ * tokens.css. Change DESIGN.md, then run `pnpm design:tokens`.
+ */
+@import "@fontsource-variable/archivo/wdth.css";
+@import "tailwindcss";
+@import "./tokens.css";
+
+@theme {
+  --font-sans: "Archivo Variable", ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Token properties DESIGN.md defines but the Tailwind export doesn't cover yet
+   (line height, font width axis, tabular figures). */
+@utility hull {
+  font-family: var(--font-hull-display);
+  font-weight: var(--font-weight-hull-display);
+  font-stretch: 62%;
+  line-height: 0.85;
+  letter-spacing: var(--tracking-hull-display);
+  text-transform: uppercase;
+}
+
+@utility headline-lg {
+  font-size: var(--text-headline-lg);
+  font-weight: var(--font-weight-headline-lg);
+  font-stretch: 75%;
+  line-height: 1.05;
+}
+
+@utility headline-md {
+  font-size: var(--text-headline-md);
+  font-weight: var(--font-weight-headline-md);
+  line-height: 1.2;
+}
+
+@utility race-number {
+  font-size: var(--text-race-number);
+  font-weight: var(--font-weight-race-number);
+  font-stretch: 75%;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+@utility meta {
+  font-size: var(--text-label-md);
+  font-weight: var(--font-weight-label-md);
+  color: var(--color-muted);
+}
+
+@layer base {
+  :root {
+    /* Header height: the home hero fills the rest of the first screen. */
+    --header-h: 3.75rem;
+
+    @media (width >= 48rem) {
+      --header-h: 4.25rem;
+    }
+  }
+
+  html {
+    color: var(--color-on-surface);
+    background: var(--color-surface);
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    font-size: var(--text-body-md);
+    line-height: 1.6;
+  }
+
+  a {
+    color: var(--color-primary-ink);
+    text-decoration: underline;
+    text-underline-offset: 0.15em;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-primary-ink);
+    outline-offset: 3px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+/* Body text written by editors (Portable Text). */
+@layer components {
+  .rich-text {
+    max-width: var(--spacing-measure);
+
+    & > * + * {
+      margin-top: 1em;
+    }
+
+    & h2 {
+      font-size: var(--text-headline-md);
+      font-weight: var(--font-weight-headline-md);
+      line-height: 1.2;
+      margin-top: 2em;
+    }
+
+    & h3 {
+      font-size: var(--text-body-lg);
+      font-weight: 700;
+      margin-top: 1.5em;
+    }
+
+    & ul {
+      list-style: disc;
+      padding-left: 1.25em;
+    }
+
+    & ol {
+      list-style: decimal;
+      padding-left: 1.25em;
+    }
+
+    & blockquote {
+      border-left: 4px solid var(--color-primary);
+      padding-left: 1em;
+      font-size: var(--text-body-lg);
+    }
+
+    & figure {
+      margin-block: 2em;
+    }
+  }
+}
+
+@layer components {
+  .button-primary {
+    display: inline-block;
+    background: var(--color-primary-ink);
+    color: var(--color-on-primary);
+    font-size: var(--text-label-md);
+    font-weight: 700;
+    border-radius: var(--radius-sm);
+    padding: 0.75rem 1.25rem;
+    text-decoration: none;
+    transition: background-color 120ms ease-out;
+
+    &:hover {
+      background: var(--color-on-surface);
+    }
+  }
+
+  .lightbox-button {
+    font-weight: 700;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid currentColor;
+    border-radius: var(--radius-sm);
+
+    &:hover {
+      background: var(--color-on-primary);
+      color: var(--color-on-surface);
+    }
+  }
+
+  .lightbox[open] {
+    animation: surface-enter 200ms cubic-bezier(0.2, 0, 0, 1);
+  }
+
+  @keyframes surface-enter {
+    from {
+      opacity: 0;
+    }
+  }
+}
+
+/* Page-width container. */
+@utility wrap {
+  margin-inline: auto;
+  max-width: var(--spacing-max-width);
+  padding-inline: var(--spacing-md);
+}

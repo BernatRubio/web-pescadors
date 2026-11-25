@@ -21,7 +21,7 @@ export function isLocale(value: string | undefined): value is Locale {
 }
 
 /** Shape stored by sanity-plugin-internationalized-array (v5). */
-export type LocalizedValue<T> = { _key?: string; language: string; value?: T }[];
+export type LocalizedValue<T> = { _key?: string; language?: string; value?: T }[];
 
 /** Picks the requested language, falling back to Catalan, then to any filled value. */
 export function pickLocale<T>(

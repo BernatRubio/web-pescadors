@@ -1,0 +1,28 @@
+---
+import { type Locale, localizedPath } from '@pescadors/shared';
+import EventTable from '../components/EventTable.astro';
+import HullBand from '../components/HullBand.astro';
+import { pageTitles, t } from '../i18n/ui';
+import { getEvents, splitEvents } from '../lib/content';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const { upcoming, past } = splitEvents(await getEvents());
+---
+
+<HullBand text={pageTitles.calendar[locale]} />
+<div class="wrap space-y-xl py-xl">
+  {
+    upcoming.length > 0 ? (
+      <EventTable events={upcoming} locale={locale} caption={t(locale, 'calendar.upcoming')} />
+    ) : (
+      <p>
+        {t(locale, 'calendar.empty')} <a href={localizedPath('results', locale)}>{t(locale, 'all.results')}</a>
+      </p>
+    )
+  }
+  {past.length > 0 && <EventTable events={past} locale={locale} caption={t(locale, 'calendar.past')} />}
+</div>

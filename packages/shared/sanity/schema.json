@@ -2589,6 +2589,14 @@
         },
         "optional": true
       },
+      "heroBand": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "inline",
+          "name": "internationalizedArrayString"
+        },
+        "optional": true
+      },
       "heroVideo": {
         "type": "objectAttribute",
         "value": {

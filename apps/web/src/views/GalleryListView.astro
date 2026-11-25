@@ -1,0 +1,49 @@
+---
+import { type Locale, localizedPath } from '@pescadors/shared';
+import HullBand from '../components/HullBand.astro';
+import Picture from '../components/Picture.astro';
+import { pageTitles, t } from '../i18n/ui';
+import { getAlbums } from '../lib/content';
+import { longDate } from '../lib/format';
+import { localizer } from '../lib/i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const l = localizer(locale);
+const albums = await getAlbums();
+---
+
+<HullBand text={pageTitles.gallery[locale]} />
+<div class="wrap py-xl">
+  {
+    albums.length === 0 ? (
+      <p>{t(locale, 'gallery.empty')}</p>
+    ) : (
+      <ul class="grid gap-x-md gap-y-xl md:grid-cols-2">
+        {albums.map((album, i) => (
+          <li class:list={[i === 0 && 'md:col-span-2']}>
+            <a href={localizedPath('gallery', locale, album.slug)} class="group block text-on-surface no-underline">
+              {album.images?.[0] && (
+                <Picture
+                  image={album.images[0]}
+                  alt=""
+                  ratio={i === 0 ? 21 / 9 : 3 / 2}
+                  width={i === 0 ? 1600 : 960}
+                  sizes={i === 0 ? '100vw' : '(min-width: 48rem) 50vw, 100vw'}
+                />
+              )}
+              <h2 class="headline-md mt-sm group-hover:text-primary-ink group-hover:underline">{l(album.title)}</h2>
+            </a>
+            <p class="meta">
+              {longDate(album.date, locale)}
+              <span class="block">{t(locale, 'gallery.photos', { n: album.images?.length ?? 0 })}</span>
+            </p>
+          </li>
+        ))}
+      </ul>
+    )
+  }
+</div>

@@ -1,39 +1,161 @@
 ---
 /**
- * Single entry point for every section page in every language.
- * Paths come from the shared route map, so translated URLs stay in one place.
- * Detail pages (news/[slug], calendar/[slug]...) are added once content comes from Sanity.
+ * Single entry point for every page in every language.
+ * Section pages come from the shared route map (`ROUTES` × `LOCALES`); detail pages
+ * (news, calendar, results, gallery) come from Sanity content. All URLs are built with
+ * `localizedPath()`, so translated paths stay in one place.
  */
 import {
   alternatePaths,
   LOCALES,
   type Locale,
   localizedPath,
-  ROUTES,
   type RouteKey,
 } from '@pescadors/shared';
 import type { GetStaticPaths } from 'astro';
-import { pageTitles, t } from '../i18n/ui';
+import { mvpSections, pageTitles, t } from '../i18n/ui';
 import Base from '../layouts/Base.astro';
+import {
+  type Album,
+  type ClubEvent,
+  getAlbums,
+  getEvents,
+  getPosts,
+  getResults,
+  type Post,
+  type Result,
+} from '../lib/content';
+import { localizer } from '../lib/i18n';
+import { imageUrl } from '../lib/sanity/image';
+import AlbumView from '../views/AlbumView.astro';
+import CalendarView from '../views/CalendarView.astro';
+import ClubView from '../views/ClubView.astro';
+import ContactView from '../views/ContactView.astro';
+import EventDetailView from '../views/EventDetailView.astro';
+import GalleryListView from '../views/GalleryListView.astro';
+import HomeView from '../views/HomeView.astro';
+import NewsDetailView from '../views/NewsDetailView.astro';
+import NewsListView from '../views/NewsListView.astro';
+import ResultDetailView from '../views/ResultDetailView.astro';
+import ResultsListView from '../views/ResultsListView.astro';
+import SponsorsView from '../views/SponsorsView.astro';
 
-export const getStaticPaths = (() =>
-  LOCALES.flatMap((locale) =>
-    (Object.keys(ROUTES) as RouteKey[]).map((route) => ({
-      params: { path: localizedPath(route, locale).replace(/^\/|\/$/g, '') || undefined },
-      props: { locale, route },
-    })),
-  )) satisfies GetStaticPaths;
+type Detail =
+  | { kind: 'post'; post: Post }
+  | { kind: 'event'; event: ClubEvent }
+  | { kind: 'result'; result: Result }
+  | { kind: 'album'; album: Album };
 
 interface Props {
   locale: Locale;
   route: RouteKey;
+  slug?: string;
+  detail?: Detail;
 }
 
-const { locale, route } = Astro.props;
-const title = route === 'home' ? t(locale, 'site.name') : pageTitles[route][locale];
+export const getStaticPaths = (async () => {
+  // Defined here: getStaticPaths can't see the rest of the frontmatter.
+  const toParam = (path: string) => path.replace(/^\/|\/$/g, '') || undefined;
+  const [posts, events, results, albums] = await Promise.all([
+    getPosts(),
+    getEvents(),
+    getResults(),
+    getAlbums(),
+  ]);
+
+  const details: { route: RouteKey; slug: string; detail: Detail }[] = [
+    ...posts.map((post) => ({
+      route: 'news' as const,
+      slug: post.slug,
+      detail: { kind: 'post' as const, post },
+    })),
+    ...events.map((event) => ({
+      route: 'calendar' as const,
+      slug: event.slug,
+      detail: { kind: 'event' as const, event },
+    })),
+    ...results
+      .filter((result) => result.event?.slug)
+      .map((result) => ({
+        route: 'results' as const,
+        slug: result.event?.slug as string,
+        detail: { kind: 'result' as const, result },
+      })),
+    ...albums.map((album) => ({
+      route: 'gallery' as const,
+      slug: album.slug,
+      detail: { kind: 'album' as const, album },
+    })),
+  ];
+
+  return LOCALES.flatMap((locale) => [
+    ...mvpSections.map((route) => ({
+      params: { path: toParam(localizedPath(route, locale)) },
+      props: { locale, route },
+    })),
+    ...details.map(({ route, slug, detail }) => ({
+      params: { path: toParam(localizedPath(route, locale, slug)) },
+      props: { locale, route, slug, detail },
+    })),
+  ]);
+}) satisfies GetStaticPaths;
+
+const { locale, route, slug, detail } = Astro.props;
+const l = localizer(locale);
+
+let title: string = route === 'home' ? t(locale, 'site.name') : pageTitles[route][locale];
+let description: string | undefined;
+let ogImage: string | null = null;
+
+if (detail?.kind === 'post') {
+  title = l(detail.post.title) ?? title;
+  description = l(detail.post.excerpt);
+  ogImage = imageUrl(detail.post.cover, 1200);
+} else if (detail?.kind === 'event') {
+  title = l(detail.event.title) ?? title;
+  description = l(detail.event.summary);
+  ogImage = imageUrl(detail.event.poster, 1200);
+} else if (detail?.kind === 'result') {
+  title = `${pageTitles.results[locale]}: ${l(detail.result.event?.title) ?? ''}`;
+} else if (detail?.kind === 'album') {
+  title = l(detail.album.title) ?? title;
+  ogImage = imageUrl(detail.album.images?.[0], 1200);
+}
 ---
 
-<Base locale={locale} title={title} alternates={alternatePaths(route)}>
-  <h1>{title}</h1>
-  <p>{t(locale, 'pending')}</p>
+<Base
+  locale={locale}
+  title={title}
+  description={description}
+  alternates={alternatePaths(route, slug)}
+  section={route}
+  ogImage={ogImage}
+>
+  {
+    detail?.kind === 'post' ? (
+      <NewsDetailView locale={locale} post={detail.post} />
+    ) : detail?.kind === 'event' ? (
+      <EventDetailView locale={locale} event={detail.event} />
+    ) : detail?.kind === 'result' ? (
+      <ResultDetailView locale={locale} result={detail.result} />
+    ) : detail?.kind === 'album' ? (
+      <AlbumView locale={locale} album={detail.album} />
+    ) : route === 'home' ? (
+      <HomeView locale={locale} />
+    ) : route === 'news' ? (
+      <NewsListView locale={locale} />
+    ) : route === 'calendar' ? (
+      <CalendarView locale={locale} />
+    ) : route === 'results' ? (
+      <ResultsListView locale={locale} />
+    ) : route === 'gallery' ? (
+      <GalleryListView locale={locale} />
+    ) : route === 'sponsors' ? (
+      <SponsorsView locale={locale} />
+    ) : route === 'club' ? (
+      <ClubView locale={locale} />
+    ) : route === 'contact' ? (
+      <ContactView locale={locale} />
+    ) : null
+  }
 </Base>

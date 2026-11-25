@@ -7,6 +7,7 @@ export default defineCliConfig({
   },
   // Hosted at https://<studioHost>.sanity.studio once the club's Sanity project exists.
   studioHost: 'rem-pescadors',
+  deployment: { appId: 'p0xl76mgezqndpmnbpop16px' },
   typegen: {
     path: '../web/src/**/*.{ts,tsx,astro}',
     schema: '../../packages/shared/sanity/schema.json',

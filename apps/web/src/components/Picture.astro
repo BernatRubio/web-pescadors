@@ -1,0 +1,56 @@
+---
+/** Responsive Sanity image with its blurred placeholder (LQIP) shown while loading. */
+import { responsiveImage } from '../lib/sanity/image';
+
+interface Props {
+  image: unknown;
+  alt: string;
+  /** width / height, e.g. 16 / 9. Without it the original proportions are kept. */
+  ratio?: number;
+  width?: number;
+  sizes?: string;
+  eager?: boolean;
+  class?: string;
+  /** CSS object-position, e.g. from the editor's hotspot when CSS does the cropping. */
+  objectPosition?: string;
+}
+
+const {
+  image,
+  alt,
+  ratio,
+  width = 1280,
+  sizes = '100vw',
+  eager = false,
+  class: className,
+  objectPosition,
+} = Astro.props;
+const img = responsiveImage(image, { width, ratio });
+const meta = (
+  image as { asset?: { metadata?: { lqip?: string; dimensions?: { aspectRatio?: number } } } }
+)?.asset?.metadata;
+const aspect = ratio ?? meta?.dimensions?.aspectRatio;
+---
+
+{
+  img && (
+    <img
+      src={img.src}
+      srcset={img.srcset}
+      sizes={sizes}
+      width={img.width}
+      height={aspect ? Math.round(img.width / aspect) : img.height}
+      alt={alt}
+      loading={eager ? 'eager' : 'lazy'}
+      fetchpriority={eager ? 'high' : undefined}
+      decoding="async"
+      class:list={['block h-auto w-full bg-neutral object-cover', className]}
+      style={[
+        meta?.lqip && `background-image:url(${meta.lqip});background-size:cover`,
+        objectPosition && `object-position:${objectPosition}`,
+      ]
+        .filter(Boolean)
+        .join(';') || undefined}
+    />
+  )
+}

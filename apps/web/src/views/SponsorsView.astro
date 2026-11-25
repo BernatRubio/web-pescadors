@@ -1,0 +1,52 @@
+---
+import { type Locale, localizedPath } from '@pescadors/shared';
+import HullBand from '../components/HullBand.astro';
+import { pageTitles, t, type UiKey } from '../i18n/ui';
+import { getSponsors } from '../lib/content';
+import { imageUrl } from '../lib/sanity/image';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const sponsors = await getSponsors();
+const tiers = [
+  { tier: 'principal', label: 'sponsors.principal', logoWidth: 480, size: 'h-24' },
+  { tier: 'collaborador', label: 'sponsors.collaborador', logoWidth: 320, size: 'h-16' },
+  { tier: 'institucional', label: 'sponsors.institucional', logoWidth: 320, size: 'h-16' },
+] as const satisfies { tier: string; label: UiKey; logoWidth: number; size: string }[];
+---
+
+<HullBand text={pageTitles.sponsors[locale]} />
+<div class="wrap py-xl">
+  <p class="max-w-(--spacing-measure) text-body-lg">{t(locale, 'sponsors.intro')}</p>
+  {
+    sponsors.length === 0 ? (
+      <p class="mt-lg">{t(locale, 'sponsors.empty')}</p>
+    ) : (
+      tiers.map(({ tier, label, logoWidth, size }) => {
+        const list = sponsors.filter((s) => s.tier === tier);
+        return (
+          list.length > 0 && (
+            <section class="mt-xl border-t border-neutral pt-lg" data-tier={tier}>
+              <h2 class="headline-md">{t(locale, label)}</h2>
+              <ul class="mt-lg flex flex-wrap items-center gap-xl">
+                {list.map((s) => {
+                  const logo = imageUrl(s.logo, logoWidth);
+                  const content = logo ? (
+                    <img src={logo} alt={s.name ?? ''} class:list={[size, 'w-auto']} loading="lazy" />
+                  ) : (
+                    <span class="headline-md">{s.name}</span>
+                  );
+                  return <li>{s.url ? <a href={s.url} rel="sponsored noopener">{content}</a> : content}</li>;
+                })}
+              </ul>
+            </section>
+          )
+        );
+      })
+    )
+  }
+  <p class="mt-xl"><a href={localizedPath('contact', locale)}>{t(locale, 'sponsors.become')}</a></p>
+</div>

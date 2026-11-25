@@ -1,0 +1,53 @@
+---
+/** Calendar race sheet: one row per event. */
+import { type Locale, localizedPath } from '@pescadors/shared';
+import { t } from '../i18n/ui';
+import type { ClubEvent } from '../lib/content';
+import { shortDate, timeOfDay } from '../lib/format';
+import { localizer } from '../lib/i18n';
+
+interface Props {
+  events: ClubEvent[];
+  locale: Locale;
+  caption: string;
+}
+
+const { events, locale, caption } = Astro.props;
+const l = localizer(locale);
+---
+
+<table class="w-full border-collapse text-left">
+  <caption class="headline-md pb-sm text-left">{caption}</caption>
+  <thead class="bg-secondary text-on-secondary">
+    <tr>
+      <th scope="col" class="px-sm py-xs text-label-md font-semibold">{t(locale, 'calendar.when')}</th>
+      <th scope="col" class="px-sm py-xs text-label-md font-semibold">{t(locale, 'calendar.event')}</th>
+      <th scope="col" class="hidden px-sm py-xs text-label-md font-semibold md:table-cell">{t(locale, 'calendar.competition')}</th>
+    </tr>
+  </thead>
+  <tbody class="divide-y divide-neutral">
+    {
+      events.map((e) => (
+        <tr class="align-baseline">
+          <td class="px-sm py-sm whitespace-nowrap">
+            <span class="race-number">{shortDate(e.start, locale)}</span>
+            {timeOfDay(e.start, locale) && <span class="meta block">{timeOfDay(e.start, locale)}</span>}
+          </td>
+          <td class="px-sm py-sm">
+            <a class="font-bold text-on-surface" href={localizedPath('calendar', locale, e.slug)}>
+              {l(e.title)}
+            </a>
+            {e.location?.name && <span class="meta block">{e.location.name}</span>}
+            {e.hasResults && (
+              <a class="meta" href={localizedPath('results', locale, e.slug)}>
+                {t(locale, 'calendar.seeResults')}
+              </a>
+            )}
+          </td>
+          <td class="hidden px-sm py-sm md:table-cell">{l(e.competition)}</td>
+        </tr>
+      ))
+    }
+  </tbody>
+</table>
+

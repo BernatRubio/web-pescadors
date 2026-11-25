@@ -41,6 +41,7 @@ export const siteSettings = defineType({
       type: 'image',
     }),
   ],
+  preview: { prepare: () => ({ title: 'Dades del club' }) },
 });
 
 export const homePage = defineType({
@@ -54,6 +55,18 @@ export const homePage = defineType({
       title: 'Foto principal',
       type: 'figure',
       validation: (r) => r.required(),
+    }),
+    defineField({
+      name: 'heroBand',
+      title: 'Text de la franja vermella',
+      description:
+        'Les lletres grans sobre la foto principal. Curt i en majúscules automàticament (ex.: "Pescadors Lloret"). Si es deixa buit, es mostra "Pescadors Lloret".',
+      type: 'internationalizedArrayString',
+      validation: (rule) =>
+        rule.custom<{ value?: string }[]>((items) => {
+          const tooLong = items?.some((i) => (i.value?.length ?? 0) > 24);
+          return tooLong ? 'Màxim 24 caràcters: és un text molt gran.' : true;
+        }),
     }),
     defineField({
       name: 'heroVideo',
@@ -79,4 +92,5 @@ export const homePage = defineType({
       validation: (r) => r.max(3),
     }),
   ],
+  preview: { prepare: () => ({ title: "Pàgina d'inici" }) },
 });

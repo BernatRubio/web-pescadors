@@ -1,0 +1,23 @@
+---
+import type { Locale } from '@pescadors/shared';
+import HullBand from '../components/HullBand.astro';
+import Picture from '../components/Picture.astro';
+import RichText from '../components/RichText.astro';
+import { pageTitles, t } from '../i18n/ui';
+import { getClubPage } from '../lib/content';
+import { localizer } from '../lib/i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const l = localizer(locale);
+const page = await getClubPage();
+---
+
+<HullBand text={l(page?.title) ?? pageTitles.club[locale]} />
+<div class="wrap py-xl">
+  {page?.image && <Picture image={page.image} alt={l(page.image.alt) ?? ''} ratio={21 / 9} width={1600} eager />}
+  {page?.body ? <RichText value={page.body} locale={locale} class="mt-lg" /> : <p>{t(locale, 'club.empty')}</p>}
+</div>

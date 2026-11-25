@@ -1,0 +1,47 @@
+---
+/**
+ * The one bold device (DESIGN.md → Components → Hull band): condensed white capitals on a
+ * crest-red band, like a club name painted on a llagut's hull. At most one per page.
+ */
+interface Props {
+  text: string;
+  /** `hero` for the home page, `page` for section titles. */
+  size?: 'hero' | 'page';
+  /** Heading level. The home hero uses `p` because the page's h1 is elsewhere. */
+  as?: 'h1' | 'p';
+  /** Slide in once on load (home page only). */
+  animate?: boolean;
+}
+
+const { text, size = 'page', as: Tag = 'h1', animate = false } = Astro.props;
+---
+
+<div class:list={['hull-band bg-primary text-on-primary', animate && 'hull-band--enter']}>
+  <Tag
+    class:list={[
+      'hull mx-auto max-w-(--spacing-max-width) px-md text-balance',
+      size === 'hero'
+        ? 'py-md text-[clamp(3rem,min(20vw,18svh),11rem)]'
+        : 'pt-lg pb-md text-[clamp(3rem,11vw,7rem)]',
+    ]}
+  >
+    {text}
+  </Tag>
+</div>
+
+<style>
+  .hull-band--enter > * {
+    animation: hull-enter 400ms cubic-bezier(0.2, 0, 0, 1) 100ms both;
+  }
+
+  /* A left-to-right wipe, like the name being painted along the hull.
+     No opacity change, so the text never drops below its contrast ratio. */
+  @keyframes hull-enter {
+    from {
+      clip-path: inset(0 100% 0 0);
+    }
+    to {
+      clip-path: inset(0 0 0 0);
+    }
+  }
+</style>

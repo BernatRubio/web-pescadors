@@ -1,0 +1,197 @@
+---
+import { type Locale, localizedPath } from '@pescadors/shared';
+import HullBand from '../components/HullBand.astro';
+import Picture from '../components/Picture.astro';
+import { t } from '../i18n/ui';
+import {
+  getAlbums,
+  getEvents,
+  getHome,
+  getPosts,
+  getResults,
+  sortedRows,
+  splitEvents,
+} from '../lib/content';
+import { longDate, shortDate } from '../lib/format';
+import { localizer } from '../lib/i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const l = localizer(locale);
+const [home, events, results, posts, albums] = await Promise.all([
+  getHome(),
+  getEvents(),
+  getResults(),
+  getPosts(),
+  getAlbums(),
+]);
+
+const next = splitEvents(events.filter((e) => e.kind === 'regata')).upcoming[0];
+const latestResult = results[0];
+const podium = latestResult ? sortedRows(latestResult).filter((r) => (r.position ?? 99) <= 3) : [];
+const [leadPost, ...morePosts] = posts.slice(0, 3);
+const album = albums[0];
+const heroTitle = l(home?.heroTitle) ?? t(locale, 'site.name');
+const heroBand = l(home?.heroBand) ?? 'Pescadors Lloret';
+const hotspot = home?.heroImage?.hotspot;
+const heroFocus = hotspot
+  ? `${Math.round((hotspot.x ?? 0.5) * 100)}% ${Math.round((hotspot.y ?? 0.5) * 100)}%`
+  : '50% 50%';
+---
+
+<section aria-labelledby="home-title">
+  <!-- First screen: only the photo and the hull band, the band on the bottom edge. -->
+  <div class="flex h-[calc(100svh-var(--header-h))] min-h-[24rem] flex-col">
+    {
+      home?.heroImage && (
+        <div class="relative aspect-[4/5] shrink-0 md:aspect-auto md:min-h-0 md:flex-1 md:shrink">
+          <Picture
+            image={home.heroImage}
+            alt={l(home.heroImage.alt) ?? ''}
+            width={2000}
+            eager
+            objectPosition={heroFocus}
+            class="absolute inset-0 h-full"
+          />
+        </div>
+      )
+    }
+    <!-- On phones the band takes the space left under the 4:5 photo, text centred. -->
+    <div class="flex flex-1 flex-col justify-center bg-primary md:flex-none">
+      <HullBand text={heroBand} size="hero" as="p" animate />
+    </div>
+  </div>
+  <div class="wrap py-lg">
+    <h1 id="home-title" class="headline-lg max-w-[24ch]">{heroTitle}</h1>
+    {l(home?.intro) && <p class="mt-md max-w-(--spacing-measure) text-body-lg">{l(home?.intro)}</p>}
+  </div>
+</section>
+
+<div class="wrap grid gap-xl border-t border-neutral py-xl md:grid-cols-12">
+  <section class="md:col-span-7" aria-labelledby="next-title">
+    <h2 id="next-title" class="headline-md">{t(locale, 'home.nextRegatta')}</h2>
+    {
+      next ? (
+        <article class="mt-sm">
+          <p class="font-bold text-primary-ink">{longDate(next.start, locale)}</p>
+          <h3 class="headline-lg mt-sm">
+            <a class="text-on-surface" href={localizedPath('calendar', locale, next.slug)}>
+              {l(next.title)}
+            </a>
+          </h3>
+          <dl class="mt-md grid grid-cols-[auto_1fr] gap-x-md gap-y-xs">
+            {next.location?.name && (
+              <>
+                <dt class="meta">{t(locale, 'calendar.where')}</dt>
+                <dd>{next.location.name}</dd>
+              </>
+            )}
+            {next.competition && (
+              <>
+                <dt class="meta">{t(locale, 'calendar.competition')}</dt>
+                <dd>{l(next.competition)}</dd>
+              </>
+            )}
+          </dl>
+          {l(next.summary) && <p class="mt-md max-w-(--spacing-measure)">{l(next.summary)}</p>}
+        </article>
+      ) : (
+        <p class="mt-sm">
+          {t(locale, 'home.noNextRegatta')}{' '}
+          <a href={localizedPath('results', locale)}>{t(locale, 'all.results')}</a>
+        </p>
+      )
+    }
+    <p class="mt-md"><a href={localizedPath('calendar', locale)}>{t(locale, 'all.calendar')}</a></p>
+  </section>
+
+  <section class="md:col-span-5" aria-labelledby="results-title">
+    <h2 id="results-title" class="headline-md">{t(locale, 'home.latestResults')}</h2>
+    {
+      latestResult?.event ? (
+        <>
+          <h3 class="headline-md mt-sm">
+            <a class="text-on-surface" href={localizedPath('results', locale, latestResult.event.slug ?? '')}>
+              {l(latestResult.event.title)}
+            </a>
+          </h3>
+          <p class="meta">{shortDate(latestResult.event.start, locale)}</p>
+          <ol class="mt-md divide-y divide-neutral border-y border-neutral">
+            {podium.slice(0, 5).map((row) => (
+              <li class="flex items-baseline gap-md py-sm">
+                <span class="race-number w-8 shrink-0">{row.position}</span>
+                <span>
+                  {l(row.category?.name)}
+                  <span class="meta block">{l(row.boatClass?.name)}</span>
+                </span>
+              </li>
+            ))}
+          </ol>
+        </>
+      ) : (
+        <p class="mt-sm">{t(locale, 'results.empty')}</p>
+      )
+    }
+    <p class="mt-md"><a href={localizedPath('results', locale)}>{t(locale, 'all.results')}</a></p>
+  </section>
+</div>
+
+{
+  leadPost && (
+    <section class="wrap border-t border-neutral py-xl" aria-labelledby="news-title">
+      <h2 id="news-title" class="headline-md">{t(locale, 'home.latestNews')}</h2>
+      <div class="mt-md grid gap-xl md:grid-cols-12">
+        <article class="md:col-span-7">
+          <a href={localizedPath('news', locale, leadPost.slug)} class="group text-on-surface no-underline">
+            {leadPost.cover && <Picture image={leadPost.cover} alt={l(leadPost.cover.alt) ?? ''} ratio={3 / 2} width={960} sizes="(min-width: 48rem) 58vw, 100vw" />}
+            <h3 class="headline-lg mt-md group-hover:text-primary-ink group-hover:underline">{l(leadPost.title)}</h3>
+          </a>
+          <p class="meta mt-xs">{longDate(leadPost.publishedAt, locale)}</p>
+          {l(leadPost.excerpt) && <p class="mt-sm max-w-(--spacing-measure)">{l(leadPost.excerpt)}</p>}
+        </article>
+        <div class="flex flex-col gap-lg md:col-span-5">
+          {morePosts.map((post) => (
+            <article>
+              <a href={localizedPath('news', locale, post.slug)} class="group grid grid-cols-[8rem_1fr] gap-md text-on-surface no-underline">
+                {post.cover ? <Picture image={post.cover} alt="" ratio={1} width={256} sizes="8rem" /> : <span class="aspect-square bg-neutral" />}
+                <span>
+                  <span class="headline-md block group-hover:text-primary-ink group-hover:underline">{l(post.title)}</span>
+                  <span class="meta mt-xs block">{longDate(post.publishedAt, locale)}</span>
+                </span>
+              </a>
+            </article>
+          ))}
+          <p><a href={localizedPath('news', locale)}>{t(locale, 'all.news')}</a></p>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+{
+  album && (album.images?.length ?? 0) > 0 && (
+    <section class="border-t border-neutral py-xl" aria-labelledby="gallery-title">
+      <div class="wrap flex flex-wrap items-baseline justify-between gap-sm">
+        <h2 id="gallery-title" class="headline-md">{t(locale, 'home.gallery')}</h2>
+        <a href={localizedPath('gallery', locale)}>{t(locale, 'all.gallery')}</a>
+      </div>
+      <a href={localizedPath('gallery', locale, album.slug)} class="mt-md grid grid-cols-2 md:grid-cols-4">
+        {album.images?.slice(0, 4).map((img) => (
+          <Picture image={img} alt={l(img.alt) ?? ''} ratio={1} width={600} sizes="(min-width: 48rem) 25vw, 50vw" />
+        ))}
+        <span class="sr-only">{l(album.title)}</span>
+      </a>
+    </section>
+  )
+}
+
+<section class="wrap border-t border-neutral py-xl" aria-labelledby="contact-title">
+  <h2 id="contact-title" class="headline-lg">{t(locale, 'home.contactTitle')}</h2>
+  <p class="mt-sm max-w-(--spacing-measure)">{t(locale, 'home.contactText')}</p>
+  <p class="mt-md">
+    <a class="button-primary" href={localizedPath('contact', locale)}>{t(locale, 'home.contactCta')}</a>
+  </p>
+</section>

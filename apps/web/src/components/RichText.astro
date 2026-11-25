@@ -1,0 +1,36 @@
+---
+/** Renders a localised Portable Text field (internationalizedArrayRichText). */
+import { type Locale, type LocalizedValue, pickLocale } from '@pescadors/shared';
+import { PortableText } from 'astro-portabletext';
+import Figure from './portable/Figure.astro';
+import Link from './portable/Link.astro';
+
+interface Props {
+  value: unknown;
+  locale: Locale;
+  class?: string;
+}
+
+const { value, locale, class: className } = Astro.props;
+type Block = { _type: string; _key: string; alt?: unknown; caption?: unknown };
+
+// Resolve the figures' translatable alt text and caption up front, so the
+// Portable Text components don't need to know the locale.
+const blocks = (pickLocale(value as LocalizedValue<Block[]>, locale) ?? []).map((block) =>
+  block._type === 'figure'
+    ? {
+        ...block,
+        altText: pickLocale(block.alt as LocalizedValue<string>, locale) ?? '',
+        captionText: pickLocale(block.caption as LocalizedValue<string>, locale),
+      }
+    : block,
+);
+---
+
+{
+  blocks.length > 0 && (
+    <div class:list={['rich-text', className]}>
+      <PortableText value={blocks} components={{ type: { figure: Figure }, mark: { link: Link } }} />
+    </div>
+  )
+}

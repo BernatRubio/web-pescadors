@@ -1,0 +1,45 @@
+/* Generated from DESIGN.md by `pnpm design:tokens`. Do not edit by hand. */
+@theme {
+  --color-primary: #f60304;
+  --color-primary-ink: #d11113;
+  --color-on-primary: #ffffff;
+  --color-secondary: #0a2861;
+  --color-secondary-light: #16468f;
+  --color-on-secondary: #ffffff;
+  --color-neutral: #d6e4e7;
+  --color-surface: #ffffff;
+  --color-on-surface: #000000;
+  --color-muted: #4a5258;
+  --font-hull-display: "Archivo Variable";
+  --font-headline-lg: "Archivo Variable";
+  --font-headline-md: "Archivo Variable";
+  --font-body-lg: "Archivo Variable";
+  --font-body-md: "Archivo Variable";
+  --font-label-md: "Archivo Variable";
+  --font-race-number: "Archivo Variable";
+  --text-hull-display: 7rem;
+  --text-headline-lg: 2.441rem;
+  --text-headline-md: 1.563rem;
+  --text-body-lg: 1.25rem;
+  --text-body-md: 1rem;
+  --text-label-md: 0.875rem;
+  --text-race-number: 1.953rem;
+  --tracking-hull-display: -0.01em;
+  --font-weight-hull-display: 900;
+  --font-weight-headline-lg: 800;
+  --font-weight-headline-md: 700;
+  --font-weight-body-lg: 400;
+  --font-weight-body-md: 400;
+  --font-weight-label-md: 600;
+  --font-weight-race-number: 900;
+  --radius-none: 0px;
+  --radius-sm: 2px;
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 2rem;
+  --spacing-xl: 4rem;
+  --spacing-section: 6rem;
+  --spacing-measure: 70ch;
+  --spacing-max-width: 80rem;
+}

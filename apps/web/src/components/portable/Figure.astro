@@ -1,0 +1,15 @@
+---
+/** An image placed inside rich text. Alt and caption are resolved by RichText.astro. */
+import Picture from '../Picture.astro';
+
+interface Props {
+  node: { altText?: string; captionText?: string };
+}
+
+const { node } = Astro.props;
+---
+
+<figure>
+  <Picture image={node} alt={node.altText ?? ''} width={960} sizes="(min-width: 48rem) 70ch, 100vw" />
+  {node.captionText && <figcaption class="meta mt-sm">{node.captionText}</figcaption>}
+</figure>

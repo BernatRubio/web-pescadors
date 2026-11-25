@@ -1,0 +1,68 @@
+---
+import { type Locale, localizedPath } from '@pescadors/shared';
+import { pageTitles, t } from '../i18n/ui';
+import { type Result, sortedRows } from '../lib/content';
+import { longDate } from '../lib/format';
+import { localizer } from '../lib/i18n';
+
+interface Props {
+  locale: Locale;
+  result: Result;
+}
+
+const { locale, result } = Astro.props;
+const l = localizer(locale);
+const rows = sortedRows(result);
+const event = result.event;
+---
+
+<article class="wrap py-xl">
+  <p class="meta"><a href={localizedPath('results', locale)}>{pageTitles.results[locale]}</a></p>
+  <h1 class="headline-lg mt-sm max-w-[28ch]">{l(event?.title)}</h1>
+  <p class="meta mt-sm">
+    {longDate(event?.start, locale)}{event?.location?.name && <span>, {event.location.name}</span>}
+  </p>
+
+  {
+    rows.length === 0 ? (
+      <p class="mt-lg">{t(locale, 'results.empty')}</p>
+    ) : (
+      <div class="mt-lg overflow-x-auto">
+        <table class="w-full border-collapse text-left">
+          <thead class="bg-secondary text-on-secondary">
+            <tr>
+              <th scope="col" class="px-sm py-xs text-label-md font-semibold">{t(locale, 'results.position')}</th>
+              <th scope="col" class="px-sm py-xs text-label-md font-semibold">{t(locale, 'results.category')}</th>
+              <th scope="col" class="px-sm py-xs text-label-md font-semibold">{t(locale, 'results.boat')}</th>
+              <th scope="col" class="hidden px-sm py-xs text-label-md font-semibold md:table-cell">{t(locale, 'results.crew')}</th>
+              <th scope="col" class="px-sm py-xs text-right text-label-md font-semibold">{t(locale, 'results.time')}</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-neutral">
+            {rows.map((row) => (
+              <tr class="align-baseline">
+                <td class:list={['race-number px-sm py-sm', (row.position ?? 99) <= 3 && 'text-primary-ink']}>{row.position}</td>
+                <td class="px-sm py-sm font-semibold">{l(row.category?.name)}</td>
+                <td class="px-sm py-sm">{l(row.boatClass?.name)}</td>
+                <td class="hidden px-sm py-sm whitespace-pre-line md:table-cell">
+                  {row.crew}
+                  {l(row.notes) && <span class="meta block">{l(row.notes)}</span>}
+                </td>
+                <td class="px-sm py-sm text-right tabular-nums">{row.time}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    )
+  }
+
+  {
+    (result.officialFileUrl || result.officialUrl) && (
+      <ul class="mt-lg flex flex-wrap gap-md">
+        {result.officialFileUrl && <li><a href={result.officialFileUrl}>{t(locale, 'results.officialPdf')}</a></li>}
+        {result.officialUrl && <li><a href={result.officialUrl} rel="noopener">{t(locale, 'results.official')}</a></li>}
+      </ul>
+    )
+  }
+</article>

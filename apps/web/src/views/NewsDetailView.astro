@@ -1,0 +1,51 @@
+---
+import { type Locale, localizedPath } from '@pescadors/shared';
+import Picture from '../components/Picture.astro';
+import RichText from '../components/RichText.astro';
+import { pageTitles, t } from '../i18n/ui';
+import type { Post } from '../lib/content';
+import { longDate } from '../lib/format';
+import { localizer } from '../lib/i18n';
+
+interface Props {
+  locale: Locale;
+  post: Post;
+}
+
+const { locale, post } = Astro.props;
+const l = localizer(locale);
+---
+
+<article class="wrap py-xl">
+  <p class="meta"><a href={localizedPath('news', locale)}>{pageTitles.news[locale]}</a></p>
+  <h1 class="headline-lg mt-sm max-w-[28ch]">{l(post.title)}</h1>
+  <p class="meta mt-sm">{longDate(post.publishedAt, locale)}</p>
+  {
+    post.cover && (
+      <figure class="mt-lg">
+        <Picture image={post.cover} alt={l(post.cover.alt) ?? ''} width={1600} eager />
+        {l(post.cover.caption) && <figcaption class="meta mt-sm">{l(post.cover.caption)}</figcaption>}
+      </figure>
+    )
+  }
+  {l(post.excerpt) && <p class="mt-lg max-w-(--spacing-measure) text-body-lg font-semibold">{l(post.excerpt)}</p>}
+  <RichText value={post.body} locale={locale} class="mt-md" />
+  {
+    (post.event?.slug || post.album?.slug) && (
+      <ul class="mt-xl space-y-sm border-t border-neutral pt-md">
+        {post.event?.slug && (
+          <li>
+            <span class="meta block">{t(locale, 'news.relatedEvent')}</span>
+            <a href={localizedPath('calendar', locale, post.event.slug)}>{l(post.event.title)}</a>
+          </li>
+        )}
+        {post.album?.slug && (
+          <li>
+            <span class="meta block">{t(locale, 'news.relatedAlbum')}</span>
+            <a href={localizedPath('gallery', locale, post.album.slug)}>{l(post.album.title)}</a>
+          </li>
+        )}
+      </ul>
+    )
+  }
+</article>

@@ -12,3 +12,6 @@ playwright-report/
 
 # Per-machine Claude Code settings
 .claude/settings.local.json
+
+# Club-owned brand assets (crest, team photos): kept local, never published
+docs/brand/

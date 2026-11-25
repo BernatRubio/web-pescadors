@@ -6,7 +6,13 @@
     "useIgnoreFile": true
   },
   "files": {
-    "includes": ["**", "!**/packages/shared/sanity/schema.json"]
+    "includes": [
+      "**",
+      "!**/packages/shared/sanity/schema.json",
+      "!**/packages/shared/sanity/types.ts",
+      "!**/apps/web/src/styles/tokens.css",
+      "!**/DESIGN.md"
+    ]
   },
   "formatter": {
     "enabled": true,
@@ -44,6 +50,21 @@
           }
         }
       }
+    },
+    {
+      "includes": ["**/styles/global.css"],
+      "linter": {
+        "rules": {
+          "complexity": {
+            "noImportantStyles": "off"
+          }
+        }
+      }
     }
-  ]
+  ],
+  "css": {
+    "parser": {
+      "tailwindDirectives": true
+    }
+  }
 }

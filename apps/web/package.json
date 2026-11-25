@@ -11,22 +11,33 @@
     "preview": "astro preview",
     "astro": "astro",
     "generate-types": "wrangler types",
-    "check": "astro check"
+    "check": "astro check",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@astrojs/cloudflare": "^14.4.9",
     "@astrojs/react": "^7.1.9",
     "@astrojs/sitemap": "^3.7.6",
+    "@fontsource-variable/archivo": "^5.3.0",
     "@pescadors/shared": "workspace:*",
+    "@sanity/client": "^8.17.0",
+    "@sanity/image-url": "^2.2.0",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "astro": "^7.4.13",
+    "astro-portabletext": "^1.0.1",
+    "groq": "^6.24.0",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
     "wrangler": "^4.168.0"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.12",
-    "typescript": "^6.0.3"
+    "@axe-core/playwright": "^4.14.0",
+    "@playwright/test": "^1.65.1",
+    "@tailwindcss/vite": "^4.3.5",
+    "tailwindcss": "^4.3.5",
+    "typescript": "^6.0.3",
+    "vite": "^8.3.8"
   }
 }

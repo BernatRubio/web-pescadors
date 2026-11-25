@@ -1,0 +1,85 @@
+---
+import { type Locale, localizedPath } from '@pescadors/shared';
+import Lightbox, { type LightboxPhoto } from '../components/Lightbox';
+import VideoFacade from '../components/VideoFacade';
+import { pageTitles, t } from '../i18n/ui';
+import type { Album } from '../lib/content';
+import { longDate } from '../lib/format';
+import { localizer } from '../lib/i18n';
+import { responsiveImage } from '../lib/sanity/image';
+
+interface Props {
+  locale: Locale;
+  album: Album;
+}
+
+const { locale, album } = Astro.props;
+const l = localizer(locale);
+
+const photos: LightboxPhoto[] = (album.images ?? []).flatMap((img) => {
+  const full = responsiveImage(img, { width: 2000 });
+  const thumb = responsiveImage(img, { width: 480, ratio: 1 });
+  if (!full || !thumb) return [];
+  const aspect = img.asset?.metadata?.dimensions?.aspectRatio ?? 1.5;
+  return [
+    {
+      key: img._key,
+      src: full.src,
+      srcset: full.srcset,
+      thumbSrc: thumb.src,
+      thumbSrcset: thumb.srcset,
+      width: 2000,
+      height: Math.round(2000 / aspect),
+      alt: l(img.alt) ?? '',
+      caption: l(img.caption),
+      lqip: img.asset?.metadata?.lqip ?? undefined,
+    },
+  ];
+});
+---
+
+<article class="wrap py-xl">
+  <p class="meta"><a href={localizedPath('gallery', locale)}>{pageTitles.gallery[locale]}</a></p>
+  <h1 class="headline-lg mt-sm max-w-[28ch]">{l(album.title)}</h1>
+  <p class="meta mt-sm">
+    {longDate(album.date, locale)}
+    {
+      album.event?.slug && (
+        <a class="block" href={localizedPath('calendar', locale, album.event.slug)}>{l(album.event.title)}</a>
+      )
+    }
+  </p>
+
+  <div class="mt-lg">
+    <Lightbox
+      client:visible
+      photos={photos}
+      labels={{
+        close: t(locale, 'lightbox.close'),
+        prev: t(locale, 'lightbox.prev'),
+        next: t(locale, 'lightbox.next'),
+        position: t(locale, 'lightbox.position'),
+      }}
+    />
+  </div>
+
+  {
+    (album.videos?.length ?? 0) > 0 && (
+      <section class="mt-xl" aria-labelledby="videos-title">
+        <h2 id="videos-title" class="headline-md">{t(locale, 'gallery.videos')}</h2>
+        <ul class="mt-md grid gap-md md:grid-cols-2">
+          {album.videos?.map((video) => (
+            <li>
+              <VideoFacade
+                client:visible
+                url={video.url ?? ''}
+                title={l(video.title) ?? l(album.title) ?? ''}
+                labels={{ play: t(locale, 'gallery.play'), note: t(locale, 'gallery.playNote') }}
+              />
+            </li>
+          ))}
+        </ul>
+      </section>
+    )
+  }
+</article>

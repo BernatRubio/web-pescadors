@@ -1,0 +1,47 @@
+---
+import { type Locale, localizedPath } from '@pescadors/shared';
+import HullBand from '../components/HullBand.astro';
+import Picture from '../components/Picture.astro';
+import { pageTitles, t } from '../i18n/ui';
+import { getPosts } from '../lib/content';
+import { longDate } from '../lib/format';
+import { localizer } from '../lib/i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const l = localizer(locale);
+const posts = await getPosts();
+---
+
+<HullBand text={pageTitles.news[locale]} />
+<div class="wrap py-xl">
+  {
+    posts.length === 0 ? (
+      <p>{t(locale, 'news.empty')}</p>
+    ) : (
+      <ul class="divide-y divide-neutral border-y border-neutral">
+        {posts.map((post) => (
+          <li>
+            <article class="grid gap-md py-lg md:grid-cols-12">
+              <div class="md:col-span-4">
+                {post.cover && <Picture image={post.cover} alt="" ratio={3 / 2} width={640} sizes="(min-width: 48rem) 33vw, 100vw" />}
+              </div>
+              <div class="md:col-span-8">
+                <p class="meta">{longDate(post.publishedAt, locale)}</p>
+                <h2 class="headline-md mt-xs">
+                  <a class="text-on-surface" href={localizedPath('news', locale, post.slug)}>
+                    {l(post.title)}
+                  </a>
+                </h2>
+                {l(post.excerpt) && <p class="mt-sm max-w-(--spacing-measure)">{l(post.excerpt)}</p>}
+              </div>
+            </article>
+          </li>
+        ))}
+      </ul>
+    )
+  }
+</div>

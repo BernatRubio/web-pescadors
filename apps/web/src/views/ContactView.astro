@@ -1,0 +1,47 @@
+---
+import type { Locale } from '@pescadors/shared';
+import HullBand from '../components/HullBand.astro';
+import { pageTitles, t } from '../i18n/ui';
+import { getSettings } from '../lib/content';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const settings = await getSettings();
+const hasAny = settings?.email || settings?.phone || settings?.address;
+---
+
+<HullBand text={pageTitles.contact[locale]} />
+<div class="wrap py-xl">
+  {
+    hasAny ? (
+      <dl class="grid max-w-3xl gap-x-xl gap-y-lg md:grid-cols-[auto_1fr]">
+        {settings?.email && (
+          <>
+            <dt class="meta">{t(locale, 'contact.email')}</dt>
+            <dd class="headline-md"><a href={`mailto:${settings.email}`}>{settings.email}</a></dd>
+          </>
+        )}
+        {settings?.phone && (
+          <>
+            <dt class="meta">{t(locale, 'contact.phone')}</dt>
+            <dd class="headline-md"><a href={`tel:${settings.phone.replace(/\s+/g, '')}`}>{settings.phone}</a></dd>
+          </>
+        )}
+        {settings?.address && (
+          <>
+            <dt class="meta">{t(locale, 'contact.address')}</dt>
+            <dd>
+              <p class="whitespace-pre-line text-body-lg">{settings.address}</p>
+              {settings.mapUrl && <a href={settings.mapUrl} rel="noopener">{t(locale, 'contact.map')}</a>}
+            </dd>
+          </>
+        )}
+      </dl>
+    ) : (
+      <p>{t(locale, 'contact.empty')}</p>
+    )
+  }
+</div>
